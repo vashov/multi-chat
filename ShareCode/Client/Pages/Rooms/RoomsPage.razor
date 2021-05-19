@@ -1,0 +1,40 @@
+﻿@page "/room/create"
+
+<TelerikForm Model="Model">
+    <FormValidation>
+        <DataAnnotationsValidator />
+    </FormValidation>
+    <FormItems>
+        <FormItem>
+            <Template>
+                <label>Room's live time</label>
+                <TelerikDropDownList @bind-Value="Model.ChatLiveTime"
+                                     Data="ChatLiveTimes"
+                                     DefaultItem="DefaultChatLiveTime"
+                                     TextField="TimeDisplay"
+                                     ValueField="Time" />
+            </Template>
+        </FormItem>
+        <FormItem>
+            <Template>
+                <label>
+                    <TelerikSwitch @bind-Value="Model.OnlyCreatorCanInvite" />
+                    <span class="mx-1">
+                        @(Model.OnlyCreatorCanInvite ? "Only I can invite" : "Any chat member can invite")
+                    </span>
+                </label>
+            </Template>
+        </FormItem>
+        <FormItem>
+            <Template>
+                <label for="userName">Your name</label>
+                <TelerikTextBox @bind-Value="Model.UserName" PlaceHolder="Enter your nickname" />
+                <ValidationMessage For="() => Model.UserName" />
+            </Template>
+        </FormItem>
+    </FormItems>
+    <FormButtons>
+        <TelerikButton @onclick="CreateChatRoom" Primary="true">Create</TelerikButton>
+        <TelerikButton @onclick="OnCancel">Cancel</TelerikButton>
+    </FormButtons>
+</TelerikForm>
