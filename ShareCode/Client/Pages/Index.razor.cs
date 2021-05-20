@@ -11,6 +11,8 @@ namespace ShareCode.Client.Pages
     {
         private class RoomInfo
         {
+            public Guid RoomId { get; set; }
+            public Guid UserId { get; set; }
             public string Name { get; set; }
         }
 
@@ -21,9 +23,9 @@ namespace ShareCode.Client.Pages
             base.OnInitialized();
 
             Items.Add(new RoomInfo { Name = "Some room One." });
-            Items.Add(new RoomInfo { Name = "Some room Two." });
-            Items.Add(new RoomInfo { Name = "Some room Three." });
-            Items.Add(new RoomInfo { Name = "Some room Four." });
+            //Items.Add(new RoomInfo { Name = "Some room Two." });
+            //Items.Add(new RoomInfo { Name = "Some room Three." });
+            //Items.Add(new RoomInfo { Name = "Some room Four." });
 
             RoomObserver.RoomConnected += RoomObserver_RoomConnected;
         }
@@ -37,7 +39,15 @@ namespace ShareCode.Client.Pages
             //    name = roomArgs.Topic;
 
             Console.WriteLine("RoomObserver_RoomConnected");
-            Items.Add(new RoomInfo { Name = roomArgs.Room.RoomTopic });
+
+            var room = new RoomInfo 
+            { 
+                UserId = roomArgs.Room.UserId,
+                RoomId = roomArgs.Room.RoomId,
+                Name = roomArgs.Room.RoomTopic 
+            };
+
+            Items.Add(room);
             StateHasChanged();
         }
     }

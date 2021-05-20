@@ -65,5 +65,14 @@ namespace ShareCode.Server.Services.Rooms
             Room room = Rooms.FirstOrDefault(r => r.Users.Contains(userId));
             return room;
         }
+
+        public List<Guid> GetRoommates(Guid userId)
+        {
+            Room room = Rooms.FirstOrDefault(r => r.Users.Contains(userId));
+            if (room == null)
+                return null;
+
+            return room.Users;
+        }
     }
 }

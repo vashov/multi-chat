@@ -1,11 +1,12 @@
-using BlazorTelerikTest.Server.Hubs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using ShareCode.Server.Hubs;
 using ShareCode.Server.Services.Invitations;
 using ShareCode.Server.Services.Messages;
 using ShareCode.Server.Services.Rooms;
@@ -33,6 +34,7 @@ namespace ShareCode.Server
             services.AddSingleton<IUserService, UserService>();
 
             services.AddSignalR();
+            //services.AddSingleton<IUserIdProvider, RoomUserIdProvider>();
 
             services.AddControllersWithViews();
             services.AddRazorPages();

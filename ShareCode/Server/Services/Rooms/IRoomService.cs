@@ -1,5 +1,6 @@
 ﻿using ShareCode.Server.Models;
 using System;
+using System.Collections.Generic;
 
 namespace ShareCode.Server.Services.Rooms
 {
@@ -12,5 +13,7 @@ namespace ShareCode.Server.Services.Rooms
 
         bool TryEnter(Guid userId, Guid roomId);
         Room GetByUser(Guid userId);
+
+        List<Guid> GetRoommates(Guid userId);
     }
 }

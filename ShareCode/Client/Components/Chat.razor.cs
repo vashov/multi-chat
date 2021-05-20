@@ -17,13 +17,19 @@ namespace ShareCode.Client.Components
             public DateTime Date { get; set; }
         }
 
+        [Parameter]
+        public Guid UserId { get; set; }
+
+        [Parameter]
+        public Guid RoomId { get; set; }
+
         [Inject]
         private NavigationManager NavigationManager { get; set; }
 
         private HubConnection hubConnection;
         private ObservableCollection<Message> Messages { get; set; } = new ObservableCollection<Message>();
 
-        private string userInput = "Boris";
+        private string UserInput = "Boris";
 
         private int UsersCount => 0;
 
@@ -50,6 +56,8 @@ namespace ShareCode.Client.Components
                 .WithUrl(NavigationManager.ToAbsoluteUri("/chathub"))
                 .Build();
 
+            hubConnection.Reconnected += HubConnection_Reconnected;
+
             hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
             {
                 var encodedMsg = $"{user}: {message}";
@@ -70,11 +78,19 @@ namespace ShareCode.Client.Components
             await hubConnection.StartAsync();
         }
 
+        private async Task HubConnection_Reconnected(string connectionId)
+        {
+            if (string.IsNullOrEmpty(connectionId))
+                return;
+
+            await hubConnection.SendAsync("UpdateUserConnection", UserId);
+        }
+
         private string GetMessageCounter() => $"{_messageInput?.Length ?? 0} / {AllowedLength}";
 
         async Task Send()
         {
-            await hubConnection.SendAsync("SendMessage", userInput, MessageInput);
+            await hubConnection.SendAsync("SendMessage", UserId, MessageInput);
         }
 
         public bool IsConnected =>

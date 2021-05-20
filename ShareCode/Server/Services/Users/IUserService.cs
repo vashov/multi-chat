@@ -1,5 +1,6 @@
 ﻿using ShareCode.Server.Models;
 using System;
+using System.Collections.Generic;
 
 namespace ShareCode.Server.Services.Users
 {
@@ -7,6 +8,9 @@ namespace ShareCode.Server.Services.Users
     {
         User Create(string name, DateTimeOffset expireAt);
 
-        //User Get(Guid userId);
+        bool UpdateConnection(Guid userId, string connectionId);
+
+        User Get(Guid userId);
+        List<User> List(List<Guid> users);
     }
 }

@@ -6,6 +6,7 @@ namespace ShareCode.Server.Models
     {
         public Guid Id { get; set; }
         public Guid PublicId { get; set; }
+        public string ConnectionId { get; set; }
 
         public string Name { get; set; }
 

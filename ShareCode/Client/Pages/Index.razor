@@ -24,7 +24,7 @@
         {
             <TileLayoutItem HeaderText="@item.Name" ColSpan="2" RowSpan="3">
                 <Content>
-                    <ShareCode.Client.Components.Chat />
+                    <ShareCode.Client.Components.Chat UserId="item.UserId" RoomId="item.RoomId"/>
                 </Content>
             </TileLayoutItem>
         }

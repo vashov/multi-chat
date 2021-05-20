@@ -1,6 +1,7 @@
 ﻿using ShareCode.Server.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ShareCode.Server.Services.Users
 {
@@ -20,6 +21,27 @@ namespace ShareCode.Server.Services.Users
 
             Users.Add(user);
             return user;
+        }
+
+        public User Get(Guid userId)
+        {
+            var user = Users.FirstOrDefault(u => u.Id == userId);
+            return user;
+        }
+
+        public List<User> List(List<Guid> users)
+        {
+            List<User> resultUsers = Users.Where(u => users.Contains(u.Id ))
+                .ToList();
+
+            return resultUsers;
+        }
+
+        public bool UpdateConnection(Guid userId, string connectionId)
+        {
+            var user = Users.FirstOrDefault(u => u.Id == userId);
+            user.ConnectionId = connectionId;
+            return true;
         }
 
         //public User Get(Guid userId)
