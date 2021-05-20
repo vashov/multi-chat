@@ -1,0 +1,55 @@
+﻿::deep .post-likes-count {
+    font-size: 13px;
+    align-self: center;
+    color: #656565;
+}
+
+.image-height {
+    height: 170px;
+}
+
+.comment-text {
+    font-size: 13px;
+    font-weight: bold;
+    max-width: 100px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.comment-data {
+    font-size: 10px;
+    font-weight: normal;
+}
+
+.comment-data span {
+    margin-left: 8px;
+}
+
+.avatar-size {
+    width: 35px !important;
+    height: 35px !important;
+    flex-basis: 35px !important;
+}
+
+.mb-xs {
+    margin-bottom: 8px;
+}
+
+.align-end {
+    text-align: end;
+}
+
+.justify-space-between {
+    justify-content: space-between;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+.flex-end {
+    display: flex;
+    justify-content: flex-end;
+}
+

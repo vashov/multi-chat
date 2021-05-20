@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ShareCode.Server.Models;
 using ShareCode.Server.Services.Invitations;
 using ShareCode.Server.Services.Rooms;
 using ShareCode.Server.Services.Users;
@@ -31,15 +32,17 @@ namespace ShareCode.Server.Controllers
         {
             DateTimeOffset expireAt = DateTimeOffset.UtcNow + request.ChatLiveTime;
 
-            Guid userId = _userService.Create(request.UserName, expireAt);
+            User user = _userService.Create(request.UserName, expireAt);
 
-            Guid roomId = _roomService.Create(userId, expireAt, request.OnlyOwnerCanInvite);
+            Guid roomId = _roomService.Create(user.Id, request.Topic, expireAt, request.OnlyOwnerCanInvite);
 
             return new CreateResponse
             {
+                RoomTopic = request.Topic,
                 RoomId = roomId,
-                UserId = userId,
-                ExpireAt = expireAt
+                UserId = user.Id,
+                UserPublicId = user.PublicId,
+                RoomExpireAt = expireAt
             };
         }
 
@@ -53,17 +56,17 @@ namespace ShareCode.Server.Controllers
             if (invitation == null)
                 return BadRequest("Invitation not found.");
 
-            Guid userId = _userService.Create(request.UserName, invitation.ExpireAt);
-            if (!_invitationService.Use(userId, invitation.Id))
+            User user = _userService.Create(request.UserName, invitation.ExpireAt);
+            if (!_invitationService.TryUse(user.Id, invitation.Id))
                 return BadRequest("Can't use invitation.");
 
-            if (!_roomService.Enter(userId, invitation.RoomId))
+            if (!_roomService.TryEnter(user.Id, invitation.RoomId))
                 return BadRequest("Can't enter to room.");
 
             return new EnterResponse
             {
                 RoomId = invitation.RoomId,
-                UserId = userId,
+                UserId = user.Id,
             };
         }
     }

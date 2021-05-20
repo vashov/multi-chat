@@ -11,7 +11,7 @@ namespace ShareCode.Client.Pages
         private Guid RoomId { get; set; }
 
         private string _id;
-        [Parameter]
+        //[Parameter]
         public string Id 
         { 
             get => _id;

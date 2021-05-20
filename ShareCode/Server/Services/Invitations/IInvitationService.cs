@@ -9,6 +9,6 @@ namespace ShareCode.Server.Services.Invitations
 
         Invitation Get(Guid invitationId);
 
-        bool Use(Guid userId, Guid invitationId);
+        bool TryUse(Guid userId, Guid invitationId);
     }
 }

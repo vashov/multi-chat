@@ -24,11 +24,12 @@ namespace ShareCode.Server.Services.Rooms
             return true;
         }
 
-        public Guid Create(Guid ownerId, DateTimeOffset expireAt, bool onlyOwnerCanInvite)
+        public Guid Create(Guid ownerId, string topic, DateTimeOffset expireAt, bool onlyOwnerCanInvite)
         {
             var room = new Room
             {
                 Id = Guid.NewGuid(),
+                Topic = topic,
                 OwnerId = ownerId,
                 OnlyOwnerCanInvite = onlyOwnerCanInvite,
                 ExpireAt = expireAt,
@@ -40,7 +41,7 @@ namespace ShareCode.Server.Services.Rooms
             return room.Id;
         }
 
-        public bool Enter(Guid userId, Guid roomId)
+        public bool TryEnter(Guid userId, Guid roomId)
         {
             var room = Rooms.FirstOrDefault(r => r.Id == roomId);
             if (room == null)

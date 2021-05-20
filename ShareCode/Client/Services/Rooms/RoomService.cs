@@ -17,22 +17,22 @@ namespace ShareCode.Client.Services.Rooms
             _client = client;
         }
 
-        public async Task<ServiceResult<Guid>> Create(CreateRequest request)
+        public async Task<ServiceResult<CreateResponse>> Create(CreateRequest request)
         {
             try
             {
-                var response = await _client.PostAsJsonAsync("Room/Create", request);
+                var response = await _client.PostAsJsonAsync("api/Room/Create", request);
 
                 if (!response.IsSuccessStatusCode)
-                    return ServiceResult<Guid>.Error(response.ReasonPhrase);
+                    return ServiceResult<CreateResponse>.Error(response.ReasonPhrase);
 
                 var content = await response.Content.ReadAsStringAsync();
-                var roomGuid = JsonSerializer.Deserialize<CreateResponse>(content, SerializerOptions.Default);
-                return ServiceResult<Guid>.Ok(roomGuid.RoomId);
+                var createResponse = JsonSerializer.Deserialize<CreateResponse>(content, SerializerOptions.Default);
+                return ServiceResult<CreateResponse>.Ok(createResponse);
             }
             catch (Exception e)
             {
-                return ServiceResult<Guid>.Error(e.Message);
+                return ServiceResult<CreateResponse>.Error(e.Message);
             }
         }
     }

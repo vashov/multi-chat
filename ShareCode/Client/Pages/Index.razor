@@ -1,3 +1,37 @@
 ﻿@page "/"
 
-<TelerikButton OnClick="GoToCreateRoom">Create chat room</TelerikButton>
+<style>
+    div.k-tilelayout-item div.k-tilelayout-item-body {
+        padding: 0;
+    }
+
+        div.k-tilelayout-item div.k-tilelayout-item-body div.k-card {
+            border: none;
+        }
+</style>
+
+<TelerikMediaQuery Media="@MediaQuery" OnChange="@((doesMatch) => isSmallScreen = doesMatch)"></TelerikMediaQuery>
+
+<TelerikTileLayout Columns="@(isSmallScreen ? 2 : 4)"
+                   ColumnWidth="@(isSmallScreen ? "50%" : "25%")"
+                   RowHeight="235px"
+                   Height="100%"
+                   Reorderable="true"
+                   Resizable="false">
+
+    <TileLayoutItems>
+        @foreach (var item in Items)
+        {
+            <TileLayoutItem HeaderText="@item.Name" ColSpan="2" RowSpan="3">
+                <Content>
+                    <ShareCode.Client.Components.Chat />
+                </Content>
+            </TileLayoutItem>
+        }
+    </TileLayoutItems>
+</TelerikTileLayout>
+
+@code {
+    private string MediaQuery { get; set; } = "(max-width: 767px)";
+    private bool isSmallScreen { get; set; }
+}

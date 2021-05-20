@@ -1,0 +1,81 @@
+﻿<style>
+    div.k-listview {
+        border-right: none;
+        border-left: none;
+    }
+</style>
+
+<TelerikCard Width="100%" Class="h-100">
+    <!--<CardActions Class="justify-space-between h-auto">
+        <div>-->
+            @*<TelerikButton Class="@($"k-flat {item.LikeActionClass}")" Icon="@item.LikeActionIcon" Title="Like" OnClick="(() => item.PostLiked = !item.PostLiked)"></TelerikButton>*@
+            <!--<TelerikButton Class="k-flat" Icon="comment" Title="Comment" OnClick="@ShowUserList"></TelerikButton>
+            <TelerikButton Class="k-flat" Icon="share" Title="Share" OnClick="@CopyInviteLink"></TelerikButton>
+        </div>
+        <span class="post-likes-count">@UsersCount</span>
+    </CardActions>-->
+
+    <CardBody Class="h-75 p-0">
+        <div class="h-auto">
+            <div>
+                @*<TelerikButton Class="@($"k-flat {item.LikeActionClass}")" Icon="@item.LikeActionIcon" Title="Like" OnClick="(() => item.PostLiked = !item.PostLiked)"></TelerikButton>*@
+                <TelerikButton Class="k-flat" Icon="comment" Title="Comment" OnClick="@ShowUserList"></TelerikButton>
+                <TelerikButton Class="k-flat" Icon="share" Title="Share" OnClick="@CopyInviteLink"></TelerikButton>
+                @*<span class="post-likes-count">@UsersCount</span>*@
+            </div>
+        </div>
+        <TelerikListView Data=@Messages
+                         Height="95%">
+            @*<HeaderTemplate>
+                    Trending articles this week
+                </HeaderTemplate>*@
+            <Template>
+                <!--<div class="k-card k-card-horizontal">
+    <div class="k-vbox k-column">
+        <div class="k-card-body">
+            <h4 class="k-card-title">@context.Text</h4>-->
+                @*<h5 class="k-card-subtitle">@context.Subtitle</h5>*@
+                @*<div class="card-date">@context.Date.ToString("MMM dd yyyy")</div>*@
+                <!--</div>-->
+                @*<div class="k-card-actions k-card-actions-horizontal k-card-actions-start">
+            <ListViewCommandButton OnClick="@SaveForLater" Enabled="@(!SavedArticles.Contains(context))" Class="k-flat">Save for later</ListViewCommandButton>
+            <ListViewCommandButton OnClick="@AddFavorite" Enabled="@(!Favorites.Contains(context))" Class="k-flat">Add to favorites</ListViewCommandButton>
+        </div>*@
+                <!--</div>-->
+                @*<img class="k-card-image" src=@($"images/articles/{context.ImageUrl}") />*@
+                <!--</div>-->
+
+                <div class="k-hbox justify-space-between mb-xs px-3 py-1">
+                    <div class="k-hbox mb-xs">
+                        @*<div class="k-avatar-circle k-avatar-primary k-avatar-solid k-avatar avatar-size">
+                            <span class="k-avatar-text">JD</span>
+                        </div>*@
+                        <div class="k-vbox">
+                            <span class="comment-text" style="word-break: break-word">@context.Sender</span>
+                            <span class="comment-data" style="word-break: break-word">@context.Text</span>
+                        </div>
+                    </div>
+
+                </div>
+                <hr />
+
+            </Template>
+        </TelerikListView>
+    </CardBody>
+    <CardFooter Class="h-25">
+        <TelerikTextArea @bind-Value="@MessageInput"
+                         Width="100%"
+                         Class="mb-xs"
+                         AutoSize="true"
+                         Label="Enter message">
+        </TelerikTextArea>
+
+        <div class="align-end">
+            <TelerikButton Class="k-flat" Primary="true" Enabled="@IsConnected" OnClick="@Send">Send</TelerikButton>
+        </div>
+    </CardFooter>
+</TelerikCard>
+
+@code {
+
+}

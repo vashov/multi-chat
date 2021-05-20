@@ -7,6 +7,7 @@ namespace ShareCode.Server.Models
     {
         public Guid Id { get; set; }
         public Guid OwnerId { get; set; }
+        public string Topic { get; set; }
 
         public DateTimeOffset ExpireAt { get; set; }
 

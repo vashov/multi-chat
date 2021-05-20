@@ -6,6 +6,6 @@ namespace ShareCode.Client.Services.Rooms
 {
     public interface IRoomService
     {
-        Task<ServiceResult<Guid>> Create(CreateRequest request);
+        Task<ServiceResult<CreateResponse>> Create(CreateRequest request);
     }
 }

@@ -5,7 +5,7 @@ namespace ShareCode.Server.Services.Users
 {
     public interface IUserService
     {
-        Guid Create(string name, DateTimeOffset expireAt);
+        User Create(string name, DateTimeOffset expireAt);
 
         //User Get(Guid userId);
     }

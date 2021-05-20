@@ -1,19 +1,31 @@
-﻿@layout TelerikLayout
-
+﻿
 @inherits LayoutComponentBase
-
 <div class="page">
-    <div class="sidebar">
+    @*<div class="sidebar">
         <NavMenu />
-    </div>
+    </div>*@
 
     <div class="main">
         <div class="top-row px-4">
+            <TelerikButton OnClick="BeginRoomCreating">Create room</TelerikButton>
             <a href="http://blazor.net" target="_blank" class="ml-md-auto">About</a>
         </div>
 
         <div class="content px-4">
-            @Body
+            <TelerikRootComponent>
+                <ShareCode.Client.Components.CreateChatWindow @ref="CreateChatWindowInstance"/>
+                @Body
+            </TelerikRootComponent>
         </div>
     </div>
 </div>
+
+@*<header>
+    <NavMenu />
+</header>
+
+<div class="container">
+    <main role="main" class="pb-3">
+        @Body
+    </main>
+</div>*@

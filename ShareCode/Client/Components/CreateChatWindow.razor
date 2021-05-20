@@ -1,0 +1,60 @@
+﻿<TelerikWindow Modal="true" @bind-Visible="@IsModalVisible">
+    <WindowTitle>
+        <strong>New room</strong>
+    </WindowTitle>
+    <WindowContent>
+        <TelerikForm EditContext="Context">
+            <FormValidation>
+                <DataAnnotationsValidator />
+            </FormValidation>
+            <FormItems>
+                <FormItem>
+                    <Template>
+                        <TelerikTextBox Label="Enter topic" @bind-Value="Model.Topic" />
+                        <ul class="py-2 list-unstyled">
+                            <li class="@Model.LengthValidation(Model.Topic)">length is between 3 to 16</li>
+                        </ul>
+                    </Template>
+                </FormItem>
+
+                <FormItem>
+                    <Template>
+                        <label>Lifespan</label>
+                        <TelerikDropDownList @bind-Value="Model.ChatLiveTime"
+                                             Data="ChatLiveTimes"
+                                             DefaultItem="DefaultChatLiveTime"
+                                             TextField="TimeDisplay"
+                                             ValueField="Time" />
+                    </Template>
+                </FormItem>
+                <FormItem>
+                    <Template>
+                        <label>
+                            <TelerikSwitch @bind-Value="Model.OnlyCreatorCanInvite" />
+                            <span class="mx-1">
+                                @(Model.OnlyCreatorCanInvite ? "Only I can invite" : "Any roommate can invite")
+                            </span>
+                        </label>
+                    </Template>
+                </FormItem>
+                <FormItem>
+                    <Template>
+                        <TelerikTextBox Label="Enter name" @bind-Value="Model.UserName" />
+                        <ul class="py-2 list-unstyled">
+                            <li class="@Model.LengthValidation(Model.UserName)">length is between 3 to 16</li>
+                            <li class="@Model.RegexValidation(Model.UserName)">only numbers and latin letters</li>
+                        </ul>
+                    </Template>
+                </FormItem>
+            </FormItems>
+            <FormButtons>
+                <TelerikButton @onclick="CreateChatRoom" Primary="true">Create</TelerikButton>
+            </FormButtons>
+        </TelerikForm>
+    </WindowContent>
+    <WindowActions>
+        <WindowAction Name="Close" />
+    </WindowActions>
+</TelerikWindow>
+
+@*<TelerikButton OnClick="@( _ => IsModalVisible = true )">Open the window</TelerikButton>*@

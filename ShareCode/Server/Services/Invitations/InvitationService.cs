@@ -9,7 +9,7 @@ namespace ShareCode.Server.Services.Invitations
     {
         private List<Invitation> Invitations { get; } = new List<Invitation>();
 
-        public bool Use(Guid userId, Guid invitationId)
+        public bool TryUse(Guid userId, Guid invitationId)
         {
             var invitation = Invitations
                 .FirstOrDefault(i => i.Id == invitationId && i.ExpireAt > DateTimeOffset.UtcNow);

@@ -8,17 +8,18 @@ namespace ShareCode.Server.Services.Users
     {
         private List<User> Users { get; } = new List<User>();
 
-        public Guid Create(string name, DateTimeOffset expireAt)
+        public User Create(string name, DateTimeOffset expireAt)
         {
             var user = new User
             {
                 Id = Guid.NewGuid(),
+                PublicId = Guid.NewGuid(),
                 Name = name,
                 ExpireAt = expireAt
             };
 
             Users.Add(user);
-            return user.Id;
+            return user;
         }
 
         //public User Get(Guid userId)

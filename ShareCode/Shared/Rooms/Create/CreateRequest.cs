@@ -5,12 +5,16 @@ namespace ShareCode.Shared.Rooms.Create
 {
     public class CreateRequest
     {
-        public TimeSpan ChatLiveTime { get; set; }
+        private const string _msg = "Length must be between 3 to 16. \nContains only numbers and latin letters.";
+        private const string _pattern = "^[A-Za-z0-9]{3,16}$";
 
+        [StringLength(16, MinimumLength = 3)]
+        public string Topic { get; set; }
+
+        public TimeSpan ChatLiveTime { get; set; }
         public bool OnlyOwnerCanInvite { get; set; }
 
-        [Required(ErrorMessage = "Set your name / pseudonym")]
-        [RegularExpression("^[A-Za-z0-9]{3,16}$", ErrorMessage = "Length must be between 3 to 16. \nContains only numbers and latin letters.")]
+        [RegularExpression(_pattern, ErrorMessage = _msg)]
         public string UserName { get; set; }
     }
 }
