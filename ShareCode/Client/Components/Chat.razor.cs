@@ -77,6 +77,7 @@ namespace ShareCode.Client.Components
             get => _messageInput;
             set
             {
+                value = value?.Replace('\n', ' ');
                 int len = (value?.Length ?? 0) < AllowedLength ? value?.Length ?? 0 : AllowedLength;
                 _messageInput = value?.Substring(0, len);
                 MessageCounter = GetMessageCounter();
