@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
+using ShareCode.Client.Services.Clipboard;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Telerik.Blazor.Components;
 
 namespace ShareCode.Client.Components
 {
@@ -25,6 +27,23 @@ namespace ShareCode.Client.Components
 
         [Inject]
         private NavigationManager NavigationManager { get; set; }
+
+        [Inject]
+        private ClipboardService ClipboardService { get; set; }
+
+        public TelerikNotification NotificationReference { get; set; }
+
+        public void AddAutoClosingNotification()
+        {
+            NotificationReference.Show(new NotificationModel()
+            {
+                Text = "Invite link was copied",
+                ThemeColor = "success",
+                Closable = false,
+                CloseAfter = 2000,
+                Icon = "star"
+            });
+        }
 
         private HubConnection hubConnection;
         private ObservableCollection<Message> Messages { get; set; } = new ObservableCollection<Message>();
@@ -53,7 +72,7 @@ namespace ShareCode.Client.Components
         protected override async Task OnInitializedAsync()
         {
             hubConnection = new HubConnectionBuilder()
-                .WithUrl(NavigationManager.ToAbsoluteUri($"/chathub?userId={UserId}"))
+                .WithUrl(NavigationManager.ToAbsoluteUri($"/hub/chat?userId={UserId}"))
                 .WithAutomaticReconnect()
                 .Build();
 
@@ -105,9 +124,11 @@ namespace ShareCode.Client.Components
             await hubConnection.DisposeAsync();
         }
 
-        private void CopyInviteLink()
+        private async void CopyInviteLink()
         {
 
+            await ClipboardService.WriteTextAsync("Some text");
+            AddAutoClosingNotification();
         }
 
         private void ShowUserList()

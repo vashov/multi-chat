@@ -73,7 +73,7 @@ namespace ShareCode.Server
             {
                 endpoints.MapRazorPages();
                 endpoints.MapControllers();
-                endpoints.MapHub<ChatHub>("/chathub");
+                endpoints.MapHub<ChatHub>("/hub/chat");
                 endpoints.MapFallbackToFile("index.html");
             });
         }
