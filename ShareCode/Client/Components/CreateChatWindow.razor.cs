@@ -106,10 +106,12 @@ namespace ShareCode.Client.Components
             RoomObserver.ConnectRoom(new RoomObserver.RoomConnectedArgs
             {
                 RoomId = serviceResult.Result.RoomId,
+                RoomOwnerPublicId = serviceResult.Result.UserPublicId,
                 RoomTopic = serviceResult.Result.RoomTopic,
                 UserId = serviceResult.Result.UserId,
                 UserPublicId = serviceResult.Result.UserPublicId,
                 RoomExpireAt = serviceResult.Result.RoomExpireAt,
+                OnlyOwnerCanInvite = serviceResult.Result.OnlyOwnerCanInvite
             });
             //Navigator.NavigateTo($"/room/{serviceResult.Result:N}");
 

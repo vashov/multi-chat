@@ -34,8 +34,11 @@
             <div>
                 @*<TelerikButton Class="@($"k-flat {item.LikeActionClass}")" Icon="@item.LikeActionIcon" Title="Like" OnClick="(() => item.PostLiked = !item.PostLiked)"></TelerikButton>*@
                 <TelerikButton Class="k-flat" Icon="comment" Title="Comment" OnClick="@ShowUserList"></TelerikButton>
-                <TelerikButton Class="k-flat" Icon="copy" Title="Copy link" OnClick="@CopyInviteLink">Invite</TelerikButton>
+                @if(CanInvite)
+                {
+                    <TelerikButton Class="k-flat" Icon="copy" Title="Copy link" OnClick="@CopyInviteLink">Invite</TelerikButton>
 
+                }
                 @*<span class="post-likes-count">@UsersCount</span>*@
             </div>
         </div>

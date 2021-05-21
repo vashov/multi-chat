@@ -106,13 +106,21 @@ namespace ShareCode.Client.Components
                 return;
             }
 
+            if (RoomObserver.AlreadyInRoom(serviceResult.Result.RoomId))
+            {
+                Console.WriteLine("You are already in room.");
+                return;
+            }
+
             RoomObserver.ConnectRoom(new RoomObserver.RoomConnectedArgs
             {
                 RoomId = serviceResult.Result.RoomId,
+                RoomOwnerPublicId = serviceResult.Result.RoomOwnerPublicId,
                 RoomTopic = serviceResult.Result.RoomTopic,
                 UserId = serviceResult.Result.UserId,
                 UserPublicId = serviceResult.Result.UserPublicId,
                 RoomExpireAt = serviceResult.Result.RoomExpireAt,
+                OnlyOwnerCanInvite = serviceResult.Result.OnlyOwnerCanInvite
             });
 
             IsModalVisible = false;

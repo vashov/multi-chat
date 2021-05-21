@@ -11,14 +11,7 @@ namespace ShareCode.Client.Pages
 {
     public partial class Index
     {
-        private class RoomInfo
-        {
-            public Guid RoomId { get; set; }
-            public Guid UserId { get; set; }
-            public string Name { get; set; }
-        }
-
-        private List<RoomInfo> Items { get; set; } = new List<RoomInfo>();
+        private List<RoomObserver.RoomConnectedArgs> Items => RoomObserver.Rooms;
 
         [Parameter]
         public string InviteId { get; set; }
@@ -66,14 +59,7 @@ namespace ShareCode.Client.Pages
 
             Console.WriteLine("RoomObserver_RoomConnected");
 
-            var room = new RoomInfo 
-            { 
-                UserId = roomArgs.UserId,
-                RoomId = roomArgs.RoomId,
-                Name = roomArgs.RoomTopic 
-            };
-
-            Items.Add(room);
+            //Items.Add(roomArgs);
             StateHasChanged();
         }
     }

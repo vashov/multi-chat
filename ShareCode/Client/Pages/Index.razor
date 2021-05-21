@@ -25,9 +25,13 @@
     <TileLayoutItems>
         @foreach (var item in Items)
         {
-            <TileLayoutItem HeaderText="@item.Name" ColSpan="2" RowSpan="3">
+            <TileLayoutItem HeaderText="@item.RoomTopic" ColSpan="2" RowSpan="3">
                 <Content>
-                    <ShareCode.Client.Components.Chat UserId="item.UserId" RoomId="item.RoomId" />
+                    <ShareCode.Client.Components.Chat UserId="item.UserId" 
+                                                      UserPublicId="item.UserPublicId"
+                                                      RoomId="item.RoomId"
+                                                      RoomOwnerPublicId="item.RoomOwnerPublicId"
+                                                      OnlyOwnerCanInvite="item.OnlyOwnerCanInvite"/>
                 </Content>
             </TileLayoutItem>
         }

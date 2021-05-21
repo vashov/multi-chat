@@ -43,7 +43,8 @@ namespace ShareCode.Server.Controllers
                 RoomId = roomId,
                 UserId = user.Id,
                 UserPublicId = user.PublicId,
-                RoomExpireAt = expireAt
+                RoomExpireAt = expireAt,
+                OnlyOwnerCanInvite = request.OnlyOwnerCanInvite
             };
         }
 
@@ -62,13 +63,18 @@ namespace ShareCode.Server.Controllers
                 return BadRequest("Can't enter to room.");
 
             Room room = _roomService.Get(invitation.RoomId);
+
+            User owner = _userService.Get(room.OwnerId);
+
             return new EnterResponse
             {
                 RoomId = room.Id,
+                RoomOwnerPublicId = owner.PublicId,
                 UserId = user.Id,
                 UserPublicId = user.PublicId,
                 RoomExpireAt = room.ExpireAt,
-                RoomTopic = room.Topic
+                RoomTopic = room.Topic,
+                OnlyOwnerCanInvite = room.OnlyOwnerCanInvite
             };
         }
     }

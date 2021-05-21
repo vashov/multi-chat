@@ -11,5 +11,7 @@ namespace ShareCode.Shared.Rooms.Create
         public Guid UserPublicId { get; set; }
 
         public DateTimeOffset RoomExpireAt { get; set; }
+
+        public bool OnlyOwnerCanInvite { get; set; }
     }
 }

@@ -17,6 +17,7 @@ namespace ShareCode.Client.Components
         private class Message
         {
             public string Sender { get; set; }
+            public Guid UserPublicId { get; set; }
             public string Text { get; set; }
             public DateTime Date { get; set; }
         }
@@ -25,7 +26,18 @@ namespace ShareCode.Client.Components
         public Guid UserId { get; set; }
 
         [Parameter]
+        public Guid UserPublicId { get; set; }
+
+        [Parameter]
         public Guid RoomId { get; set; }
+
+        [Parameter]
+        public Guid RoomOwnerPublicId { get; set; }
+
+        [Parameter]
+        public bool OnlyOwnerCanInvite { get; set; }
+
+        public bool CanInvite => !OnlyOwnerCanInvite || UserPublicId == RoomOwnerPublicId;
 
         [Inject]
         private NavigationManager NavigationManager { get; set; }
