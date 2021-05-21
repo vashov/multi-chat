@@ -35,6 +35,9 @@ namespace ShareCode.Client.Components
         public Guid RoomOwnerPublicId { get; set; }
 
         [Parameter]
+        public DateTimeOffset ExpireAt { get; set; }
+
+        [Parameter]
         public bool OnlyOwnerCanInvite { get; set; }
 
         public bool CanInvite => !OnlyOwnerCanInvite || UserPublicId == RoomOwnerPublicId;
@@ -47,6 +50,19 @@ namespace ShareCode.Client.Components
 
         [Inject]
         private IInvitationService InvitationService { get; set; }
+
+        private System.Timers.Timer _timer; 
+
+        private string _timerDisplay;
+        private string TimerDisplay
+        {
+            get => _timerDisplay;
+            set
+            {
+                _timerDisplay = value;
+                StateHasChanged();
+            }
+        }
 
         public TelerikNotification NotificationReference { get; set; }
 
@@ -101,6 +117,29 @@ namespace ShareCode.Client.Components
             await hubConnection.StartAsync();
         }
 
+        protected override void OnParametersSet()
+        {
+            base.OnParametersSet();
+
+            TimerDisplay = GetLeftTime().ToString(@"hh\:mm\:ss");
+
+            _timer = new System.Timers.Timer(TimeSpan.FromSeconds(1).TotalMilliseconds);
+            _timer.Elapsed += (e, o) =>
+            {
+                TimeSpan lefttime = GetLeftTime();
+                TimerDisplay = lefttime.ToString(@"hh\:mm\:ss");
+            };
+            _timer.Start();
+        }
+
+        private TimeSpan GetLeftTime()
+        {
+            TimeSpan lefttime = ExpireAt - DateTime.UtcNow;
+            if (lefttime < TimeSpan.Zero)
+                lefttime = TimeSpan.Zero;
+            return lefttime;
+        }
+
         private async Task HubConnection_Reconnected(string connectionId)
         {
             if (string.IsNullOrEmpty(connectionId))
@@ -125,6 +164,8 @@ namespace ShareCode.Client.Components
         public async ValueTask DisposeAsync()
         {
             await hubConnection.DisposeAsync();
+            _timer?.Dispose();
+            _timer = null;
         }
 
         private async void CopyInviteLink()
