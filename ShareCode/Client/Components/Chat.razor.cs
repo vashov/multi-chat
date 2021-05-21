@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using ShareCode.Client.Services.Clipboard;
+using ShareCode.Client.Services.Invitations;
+using ShareCode.Shared.Invitations.Create;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -31,24 +33,13 @@ namespace ShareCode.Client.Components
         [Inject]
         private ClipboardService ClipboardService { get; set; }
 
-        public TelerikNotification NotificationReference { get; set; }
+        [Inject]
+        private IInvitationService InvitationService { get; set; }
 
-        public void AddAutoClosingNotification()
-        {
-            NotificationReference.Show(new NotificationModel()
-            {
-                Text = "Invite link was copied",
-                ThemeColor = "success",
-                Closable = false,
-                CloseAfter = 2000,
-                Icon = "star"
-            });
-        }
+        public TelerikNotification NotificationReference { get; set; }
 
         private HubConnection hubConnection;
         private ObservableCollection<Message> Messages { get; set; } = new ObservableCollection<Message>();
-
-        private string UserInput = "Boris";
 
         private int UsersCount => 0;
 
@@ -126,14 +117,41 @@ namespace ShareCode.Client.Components
 
         private async void CopyInviteLink()
         {
+            CreateRequest request = new CreateRequest
+            {
+                RoomId = RoomId,
+                UserId = UserId,
+                IsPermanent = true
+            };
 
-            await ClipboardService.WriteTextAsync("Some text");
-            AddAutoClosingNotification();
+            var serviceResult = await InvitationService.Create(request);
+            if (!serviceResult.IsOk)
+            {
+                AddAutoClosingNotification(serviceResult.ErrorMsg, "error", "cancel");
+                return;
+            }
+
+            Guid invitationId = serviceResult.Result.InvitationId;
+            string inviteLink = NavigationManager.ToAbsoluteUri($"/invite/{invitationId}").AbsoluteUri;
+            await ClipboardService.WriteTextAsync(inviteLink);
+            AddAutoClosingNotification("Invite link was copied", "success", "clipboard");
         }
 
         private void ShowUserList()
         {
 
+        }
+
+        private void AddAutoClosingNotification(string text, string theme, string icon)
+        {
+            NotificationReference.Show(new NotificationModel()
+            {
+                Text = text,
+                ThemeColor = theme,
+                Closable = false,
+                CloseAfter = 2000,
+                Icon = icon
+            });
         }
 
         //void ValueChangedHandler(string input)

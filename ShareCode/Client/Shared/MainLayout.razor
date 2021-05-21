@@ -7,13 +7,15 @@
 
     <div class="main">
         <div class="top-row px-4">
-            <TelerikButton OnClick="BeginRoomCreating">Create room</TelerikButton>
+            <TelerikButton OnClick="BeginRoomCreating" Primary="true">Create room</TelerikButton>
+            <TelerikButton OnClick="UseInvite" Class="mx-3">Use invite</TelerikButton>
             <a href="http://blazor.net" target="_blank" class="ml-md-auto">About</a>
         </div>
 
         <div class="content px-4">
             <TelerikRootComponent>
-                <ShareCode.Client.Components.CreateChatWindow @ref="CreateChatWindowInstance"/>
+                <ShareCode.Client.Components.CreateChatWindow @ref="CreateChatWindowInstance" />
+                <ShareCode.Client.Components.EnterChatWindow @ref="EnterChatWindowInstance" ShowInviteLinkInput="true" />
                 @Body
             </TelerikRootComponent>
         </div>

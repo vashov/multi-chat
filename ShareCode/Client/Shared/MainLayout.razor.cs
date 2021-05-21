@@ -9,11 +9,15 @@ namespace ShareCode.Client.Shared
     {
         private void BeginRoomCreating()
         {
-            //V = !V;
             CreateChatWindowInstance.IsModalVisible = true;
         }
 
-        public bool V { get; set; } = false;
-        ShareCode.Client.Components.CreateChatWindow CreateChatWindowInstance { get; set; }
+        private void UseInvite()
+        {
+            EnterChatWindowInstance.IsModalVisible = true;
+        }
+
+        private ShareCode.Client.Components.CreateChatWindow CreateChatWindowInstance { get; set; }
+        private ShareCode.Client.Components.EnterChatWindow EnterChatWindowInstance { get; set; }
     }
 }

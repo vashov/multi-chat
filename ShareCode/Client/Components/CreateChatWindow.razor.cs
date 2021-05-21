@@ -31,7 +31,7 @@ namespace ShareCode.Client.Components
             [StringLength(maximumLength: 16, MinimumLength = 3)]
             public string Topic { get; set; }
 
-            public TimeSpan ChatLiveTime { get; set; }
+            public string ChatLiveTime { get; set; }
 
             [Required]
             [StringLength(maximumLength: 16, MinimumLength = 3)]
@@ -49,7 +49,7 @@ namespace ShareCode.Client.Components
 
         private class ChatLiveTime
         {
-            public TimeSpan Time { get; set; }
+            public string Time { get; set; }
             public string TimeDisplay { get; set; }
         }
 
@@ -59,7 +59,7 @@ namespace ShareCode.Client.Components
         private CreateRoomModel Model { get; set; } = new CreateRoomModel();
 
         private ChatLiveTime DefaultChatLiveTime { get; set; }
-            = new ChatLiveTime { Time = TimeSpan.FromMinutes(10), TimeDisplay = "5 mins" };
+            = new ChatLiveTime { Time = TimeSpan.FromMinutes(10).ToString(), TimeDisplay = "10 mins" };
 
         private List<ChatLiveTime> ChatLiveTimes { get; set; }
 
@@ -68,14 +68,15 @@ namespace ShareCode.Client.Components
         {
             ChatLiveTimes = new List<ChatLiveTime>
             {
-                new ChatLiveTime { Time = TimeSpan.FromMinutes(1), TimeDisplay = "1 min" },
+                new ChatLiveTime { Time = TimeSpan.FromMinutes(1).ToString(), TimeDisplay = "1 min" },
+                new ChatLiveTime { Time = TimeSpan.FromMinutes(5).ToString(), TimeDisplay = "5 mins" },
                 DefaultChatLiveTime,
-                new ChatLiveTime { Time = TimeSpan.FromMinutes(5), TimeDisplay = "10 mins" },
-                new ChatLiveTime { Time = TimeSpan.FromMinutes(30), TimeDisplay = "30 mins" },
-                new ChatLiveTime { Time = TimeSpan.FromHours(1), TimeDisplay = "1 hour" },
+                new ChatLiveTime { Time = TimeSpan.FromMinutes(30).ToString(), TimeDisplay = "30 mins" },
+                new ChatLiveTime { Time = TimeSpan.FromHours(1).ToString(), TimeDisplay = "1 hour" },
                 //new ChatLiveTime { Time = TimeSpan.FromDays(1), TimeDisplay = "1 day" },
             };
 
+            Model.ChatLiveTime = DefaultChatLiveTime.Time;
             Context = new EditContext(Model);
 
             base.OnInitialized();
@@ -85,11 +86,12 @@ namespace ShareCode.Client.Components
         {
             if (!Context.Validate())
                 return;
+            Console.WriteLine(Model.ChatLiveTime);
 
             var request = new CreateRequest()
             {
                 Topic = Model.Topic,
-                ChatLiveTime = Model.ChatLiveTime,
+                ChatLifespan = Model.ChatLiveTime,
                 OnlyOwnerCanInvite = Model.OnlyCreatorCanInvite,
                 UserName = Model.UserName,
             };
@@ -103,7 +105,11 @@ namespace ShareCode.Client.Components
 
             RoomObserver.ConnectRoom(new RoomObserver.RoomConnectedArgs
             {
-                Room = serviceResult.Result
+                RoomId = serviceResult.Result.RoomId,
+                RoomTopic = serviceResult.Result.RoomTopic,
+                UserId = serviceResult.Result.UserId,
+                UserPublicId = serviceResult.Result.UserPublicId,
+                RoomExpireAt = serviceResult.Result.RoomExpireAt,
             });
             //Navigator.NavigateTo($"/room/{serviceResult.Result:N}");
 

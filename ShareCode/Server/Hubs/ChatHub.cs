@@ -43,12 +43,6 @@ namespace ShareCode.Server.Hubs
             await Clients.Clients(connections).SendAsync("ReceiveMessage", sender.Name, message);
         }
 
-        //public async Task EnterToRoom(string room, string user)
-        //{
-        //    Guid roomId = Guid.Parse(room);
-        //    Guid userId = Guid.Parse(user);
-        //}
-
         public async Task UpdateUserConnection(string user)
         {
             await Task.CompletedTask;

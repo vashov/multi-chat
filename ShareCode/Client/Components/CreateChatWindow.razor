@@ -20,11 +20,11 @@
                 <FormItem>
                     <Template>
                         <label>Lifespan</label>
-                        <TelerikDropDownList @bind-Value="Model.ChatLiveTime"
+                        <TelerikDropDownList @bind-Value="@Model.ChatLiveTime"
                                              Data="ChatLiveTimes"
-                                             DefaultItem="DefaultChatLiveTime"
                                              TextField="TimeDisplay"
                                              ValueField="Time" />
+                        @*DefaultItem="DefaultChatLiveTime"*@
                     </Template>
                 </FormItem>
                 <FormItem>

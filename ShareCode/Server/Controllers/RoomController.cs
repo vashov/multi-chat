@@ -30,7 +30,8 @@ namespace ShareCode.Server.Controllers
         [HttpPost("[action]")]
         public ActionResult<CreateResponse> Create(CreateRequest request)
         {
-            DateTimeOffset expireAt = DateTimeOffset.UtcNow + request.ChatLiveTime;
+            TimeSpan lifespan = TimeSpan.Parse(request.ChatLifespan);
+            DateTimeOffset expireAt = DateTimeOffset.UtcNow + lifespan;
 
             User user = _userService.Create(request.UserName, expireAt);
 
@@ -49,10 +50,7 @@ namespace ShareCode.Server.Controllers
         [HttpPost("[action]")]
         public ActionResult<EnterResponse> Enter(EnterRequest request)
         {
-            if (!Guid.TryParseExact(request.Invite, "N", out Guid invitationId))
-                return BadRequest("Wrong invitaion id.");
-
-            var invitation = _invitationService.Get(invitationId);
+            var invitation = _invitationService.Get(request.Invite);
             if (invitation == null)
                 return BadRequest("Invitation not found.");
 
@@ -63,10 +61,14 @@ namespace ShareCode.Server.Controllers
             if (!_roomService.TryEnter(user.Id, invitation.RoomId))
                 return BadRequest("Can't enter to room.");
 
+            Room room = _roomService.Get(invitation.RoomId);
             return new EnterResponse
             {
-                RoomId = invitation.RoomId,
+                RoomId = room.Id,
                 UserId = user.Id,
+                UserPublicId = user.PublicId,
+                RoomExpireAt = room.ExpireAt,
+                RoomTopic = room.Topic
             };
         }
     }

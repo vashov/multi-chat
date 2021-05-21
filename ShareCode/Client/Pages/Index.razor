@@ -1,4 +1,5 @@
 ﻿@page "/"
+@page "/invite/{inviteId}"
 
 <style>
     div.k-tilelayout-item div.k-tilelayout-item-body {
@@ -12,6 +13,8 @@
 
 <TelerikMediaQuery Media="@MediaQuery" OnChange="@((doesMatch) => isSmallScreen = doesMatch)"></TelerikMediaQuery>
 
+<ShareCode.Client.Components.EnterChatWindow @ref="EnterChatWindowInstance" />
+
 <TelerikTileLayout Columns="@(isSmallScreen ? 2 : 4)"
                    ColumnWidth="@(isSmallScreen ? "50%" : "25%")"
                    RowHeight="235px"
@@ -24,7 +27,7 @@
         {
             <TileLayoutItem HeaderText="@item.Name" ColSpan="2" RowSpan="3">
                 <Content>
-                    <ShareCode.Client.Components.Chat UserId="item.UserId" RoomId="item.RoomId"/>
+                    <ShareCode.Client.Components.Chat UserId="item.UserId" RoomId="item.RoomId" />
                 </Content>
             </TileLayoutItem>
         }

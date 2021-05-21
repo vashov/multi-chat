@@ -37,6 +37,7 @@ namespace ShareCode.Server
             //services.AddSingleton<IUserIdProvider, RoomUserIdProvider>();
 
             services.AddControllersWithViews();
+
             services.AddRazorPages();
 
             services.AddResponseCompression(opts =>

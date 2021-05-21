@@ -10,7 +10,13 @@ namespace ShareCode.Client.Services.RoomObserver
     {
         public class RoomConnectedArgs : EventArgs
         {
-            public CreateResponse Room { get; set; }
+            public Guid RoomId { get; set; }
+            public string RoomTopic { get; set; }
+
+            public Guid UserId { get; set; }
+            public Guid UserPublicId { get; set; }
+
+            public DateTimeOffset RoomExpireAt { get; set; }
         }
 
         public static event EventHandler<RoomConnectedArgs> RoomConnected;
