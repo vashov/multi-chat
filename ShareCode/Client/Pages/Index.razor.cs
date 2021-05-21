@@ -22,7 +22,7 @@ namespace ShareCode.Client.Pages
         {
             base.OnInitialized();
 
-            Items.Add(new RoomInfo { Name = "Some room One." });
+            //Items.Add(new RoomInfo { Name = "Some room One." });
             //Items.Add(new RoomInfo { Name = "Some room Two." });
             //Items.Add(new RoomInfo { Name = "Some room Three." });
             //Items.Add(new RoomInfo { Name = "Some room Four." });

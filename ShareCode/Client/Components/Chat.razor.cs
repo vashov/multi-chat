@@ -53,7 +53,8 @@ namespace ShareCode.Client.Components
         protected override async Task OnInitializedAsync()
         {
             hubConnection = new HubConnectionBuilder()
-                .WithUrl(NavigationManager.ToAbsoluteUri("/chathub"))
+                .WithUrl(NavigationManager.ToAbsoluteUri($"/chathub?userId={UserId}"))
+                .WithAutomaticReconnect()
                 .Build();
 
             hubConnection.Reconnected += HubConnection_Reconnected;
@@ -91,7 +92,10 @@ namespace ShareCode.Client.Components
         async Task Send()
         {
             await hubConnection.SendAsync("SendMessage", UserId, MessageInput);
+            MessageInput = string.Empty;
         }
+
+        private bool IsSendBtnEnabled => !string.IsNullOrEmpty(MessageInput) && IsConnected;
 
         public bool IsConnected =>
             hubConnection.State == HubConnectionState.Connected;

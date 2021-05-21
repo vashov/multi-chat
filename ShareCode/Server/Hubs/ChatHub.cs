@@ -35,31 +35,45 @@ namespace ShareCode.Server.Hubs
 
             List<User> users = UserService.List(userIds);
 
-            List<string> connections = users.Select(u => u.ConnectionId).ToList();
+            List<string> connections = users
+                .Where(u => u.ConnectionId != null)
+                .Select(u => u.ConnectionId)
+                .ToList();
 
             await Clients.Clients(connections).SendAsync("ReceiveMessage", sender.Name, message);
         }
 
-        public async Task EnterToRoom(string room, string user)
-        {
-            Guid roomId = Guid.Parse(room);
-            Guid userId = Guid.Parse(user);
-        }
+        //public async Task EnterToRoom(string room, string user)
+        //{
+        //    Guid roomId = Guid.Parse(room);
+        //    Guid userId = Guid.Parse(user);
+        //}
 
         public async Task UpdateUserConnection(string user)
         {
+            await Task.CompletedTask;
+
             Guid userId = Guid.Parse(user);
 
             UserService.UpdateConnection(userId, Context.ConnectionId);
         }
 
-        //public override Task OnConnectedAsync()
-        //{
-        //    string name = Context.User.Identity.Name;
+        public override Task OnConnectedAsync()
+        {
+            //string name = Context.User.Identity.Name;
+            var httpContext = Context.GetHttpContext();
+            string userIdToken = httpContext.Request.Query["userId"].FirstOrDefault();
+            Guid userId = Guid.Parse(userIdToken);
+            UserService.UpdateConnection(userId, Context.ConnectionId);
 
-        //    _connections.Add(name, Context.ConnectionId);
+            //_connections.Add(name, Context.ConnectionId);
 
-        //    return base.OnConnected();
-        //}
+            return base.OnConnectedAsync();
+        }
+
+        public override Task OnDisconnectedAsync(Exception exception)
+        {
+            return base.OnDisconnectedAsync(exception);
+        }
     }
 }
