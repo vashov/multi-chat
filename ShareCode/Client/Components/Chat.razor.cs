@@ -66,7 +66,7 @@ namespace ShareCode.Client.Components
 
         public TelerikNotification NotificationReference { get; set; }
 
-        private HubConnection hubConnection;
+        private     HubConnection hubConnection;
         private ObservableCollection<Message> Messages { get; set; } = new ObservableCollection<Message>();
 
         private int UsersCount => 0;
