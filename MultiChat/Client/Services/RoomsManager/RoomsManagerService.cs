@@ -1,12 +1,10 @@
-﻿using MultiChat.Shared.Rooms.Create;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
-namespace MultiChat.Client.Services.RoomObserver
+namespace MultiChat.Client.Services.RoomsManager
 {
-    public static class RoomObserver
+    public class RoomsManagerService
     {
         public class RoomConnectedArgs : EventArgs
         {
@@ -22,19 +20,24 @@ namespace MultiChat.Client.Services.RoomObserver
             public bool OnlyOwnerCanInvite { get; set; }
         }
 
-        public static List<RoomConnectedArgs> Rooms { get; } = new List<RoomConnectedArgs>();
+        public List<RoomConnectedArgs> Rooms { get; } = new List<RoomConnectedArgs>();
 
-        public static event EventHandler<RoomConnectedArgs> RoomConnected;
+        public event EventHandler<RoomConnectedArgs> RoomConnected;
 
-        public static void ConnectRoom(RoomConnectedArgs args)
+        public void ConnectRoom(RoomConnectedArgs args)
         {
             Rooms.Add(args);
             RoomConnected.Invoke(null, args);
         }
 
-        public static bool AlreadyInRoom(Guid roomId)
+        public bool AlreadyInRoom(Guid roomId)
         {
             return Rooms.Any(r => r.RoomId == roomId);
+        }
+
+        public void RemoveRoom(Guid roomId)
+        {
+            Rooms.RemoveAll(r => r.RoomId == roomId);
         }
     }
 }

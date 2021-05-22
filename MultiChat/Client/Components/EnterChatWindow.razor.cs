@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using MultiChat.Client.Services.RoomObserver;
+using MultiChat.Client.Services.RoomsManager;
 using MultiChat.Client.Services.Rooms;
 using MultiChat.Shared.Rooms.Enter;
 using System;
@@ -64,6 +64,9 @@ namespace MultiChat.Client.Components
         [Inject]
         private IRoomService RoomService { get; set; }
 
+        [Inject]
+        private RoomsManagerService RoomsManager { get; set; }
+
         [Parameter]
         public bool ShowInviteLinkInput { get; set; }
 
@@ -106,13 +109,13 @@ namespace MultiChat.Client.Components
                 return;
             }
 
-            if (RoomObserver.AlreadyInRoom(serviceResult.Result.RoomId))
+            if (RoomsManager.AlreadyInRoom(serviceResult.Result.RoomId))
             {
                 Console.WriteLine("You are already in room.");
                 return;
             }
 
-            RoomObserver.ConnectRoom(new RoomObserver.RoomConnectedArgs
+            RoomsManager.ConnectRoom(new RoomsManagerService.RoomConnectedArgs
             {
                 RoomId = serviceResult.Result.RoomId,
                 RoomOwnerPublicId = serviceResult.Result.RoomOwnerPublicId,

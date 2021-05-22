@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MultiChat.Client.Components;
-using MultiChat.Client.Services.RoomObserver;
+using MultiChat.Client.Services.RoomsManager;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Telerik.Blazor.Components;
 
@@ -11,7 +12,8 @@ namespace MultiChat.Client.Pages
 {
     public partial class Index
     {
-        private List<RoomObserver.RoomConnectedArgs> Items => RoomObserver.Rooms;
+        [Inject]
+        public RoomsManagerService RoomManager { get; set; }
 
         [Parameter]
         public string InviteId { get; set; }
@@ -25,7 +27,7 @@ namespace MultiChat.Client.Pages
         {
             base.OnInitialized();
 
-            RoomObserver.RoomConnected += RoomObserver_RoomConnected;
+            RoomManager.RoomConnected += RoomObserver_RoomConnected;
         }
 
         protected override void OnAfterRender(bool firstRender)
@@ -39,10 +41,15 @@ namespace MultiChat.Client.Pages
                 EnterChatWindowInstance.IsModalVisible = true;
                 NavigationManager.NavigateTo("/");
             }
-
         }
 
-        private void RoomObserver_RoomConnected(object sender, RoomObserver.RoomConnectedArgs roomArgs)
+        private void CloseChat(Guid roomId)
+        {
+            RoomManager.RemoveRoom(roomId);
+            StateHasChanged();
+        }
+
+        private void RoomObserver_RoomConnected(object sender, RoomsManagerService.RoomConnectedArgs roomArgs)
         {
             //string name;
             //if (Guid.TryParseExact(roomArgs.Room.RoomTopic, "N", out Guid roomId))

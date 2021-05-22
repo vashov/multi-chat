@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using MultiChat.Client.Services.Clipboard;
 using MultiChat.Client.Services.Invitations;
 using MultiChat.Client.Services.Rooms;
+using MultiChat.Client.Services.RoomsManager;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -26,6 +27,7 @@ namespace MultiChat.Client
             builder.Services.AddScoped<IInvitationService, InvitationService>();
 
             builder.Services.AddScoped<ClipboardService>();
+            builder.Services.AddSingleton<RoomsManagerService>();
 
             builder.Services.AddTelerikBlazor();
 

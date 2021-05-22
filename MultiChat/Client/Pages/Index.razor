@@ -16,8 +16,8 @@
 @**This enter-chat-window used when open app via invite link*@
 <MultiChat.Client.Components.EnterChatWindow @ref="EnterChatWindowInstance" />
 
-<MultiChat.Client.Components.Wellcome IsVisible="Items.IsNullOrEmpty()" />
-@if (Items.HasAny())
+<MultiChat.Client.Components.Wellcome IsVisible="RoomManager.Rooms.IsNullOrEmpty()" />
+@if (RoomManager.Rooms.HasAny())
 {
     <TelerikTileLayout Columns="@(isSmallScreen ? 2 : 4)"
                        ColumnWidth="@(isSmallScreen ? "50%" : "25%")"
@@ -27,7 +27,7 @@
                        Resizable="false">
 
         <TileLayoutItems>
-            @foreach (var item in Items)
+            @foreach (var item in RoomManager.Rooms)
             {
                 <TileLayoutItem HeaderText="@item.RoomTopic" ColSpan="2" RowSpan="3">
                     <Content>
@@ -36,7 +36,8 @@
                                                           RoomId="item.RoomId"
                                                           RoomOwnerPublicId="item.RoomOwnerPublicId"
                                                           OnlyOwnerCanInvite="item.OnlyOwnerCanInvite"
-                                                          ExpireAt="item.RoomExpireAt" />
+                                                          ExpireAt="item.RoomExpireAt"
+                                                          CloseChat="@CloseChat"/>
                     </Content>
                 </TileLayoutItem>
             }

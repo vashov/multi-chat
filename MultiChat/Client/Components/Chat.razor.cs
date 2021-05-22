@@ -40,6 +40,9 @@ namespace MultiChat.Client.Components
         [Parameter]
         public bool OnlyOwnerCanInvite { get; set; }
 
+        [Parameter]
+        public Action<Guid> CloseChat { get; set; }
+
         public bool CanInvite => !OnlyOwnerCanInvite || UserPublicId == RoomOwnerPublicId;
 
         [Inject]
@@ -66,7 +69,7 @@ namespace MultiChat.Client.Components
 
         public TelerikNotification NotificationReference { get; set; }
 
-        private     HubConnection hubConnection;
+        private HubConnection _hubConnection;
         private ObservableCollection<Message> Messages { get; set; } = new ObservableCollection<Message>();
 
         private int UsersCount => 0;
@@ -78,27 +81,27 @@ namespace MultiChat.Client.Components
             set
             {
                 value = value?.Replace('\n', ' ');
-                int len = (value?.Length ?? 0) < AllowedLength ? value?.Length ?? 0 : AllowedLength;
+                int len = (value?.Length ?? 0) < _allowedLength ? value?.Length ?? 0 : _allowedLength;
                 _messageInput = value?.Substring(0, len);
                 MessageCounter = GetMessageCounter();
             }
         }
 
-        private const int AllowedLength = 128;
+        private const int _allowedLength = 128;
 
-        private string MessageCounterClass => (MessageInput?.Length ?? 0) >= AllowedLength ? "text-danger" : "text-success";
+        private string MessageCounterClass => (MessageInput?.Length ?? 0) >= _allowedLength ? "text-danger" : "text-success";
 
         private string MessageCounter { get; set; }
         protected override async Task OnInitializedAsync()
         {
-            hubConnection = new HubConnectionBuilder()
+            _hubConnection = new HubConnectionBuilder()
                 .WithUrl(NavigationManager.ToAbsoluteUri($"/hub/chat?userId={UserId}"))
                 .WithAutomaticReconnect()
                 .Build();
 
-            hubConnection.Reconnected += HubConnection_Reconnected;
+            _hubConnection.Reconnected += HubConnection_Reconnected;
 
-            hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
+            _hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
             {
                 var encodedMsg = $"{user}: {message}";
 
@@ -115,20 +118,24 @@ namespace MultiChat.Client.Components
 
             MessageCounter = GetMessageCounter();
 
-            await hubConnection.StartAsync();
+            await _hubConnection.StartAsync();
         }
 
-        protected override void OnParametersSet()
+        protected override void OnInitialized()
         {
-            base.OnParametersSet();
-
             TimerDisplay = GetLeftTime().ToString(@"hh\:mm\:ss");
 
+            Console.WriteLine($"Chat OnInitialized {RoomId}");
             _timer = new System.Timers.Timer(TimeSpan.FromSeconds(1).TotalMilliseconds);
             _timer.Elapsed += (e, o) =>
             {
                 TimeSpan lefttime = GetLeftTime();
                 TimerDisplay = lefttime.ToString(@"hh\:mm\:ss");
+
+                if (lefttime == TimeSpan.Zero)
+                {
+                    CloseChat.Invoke(RoomId);
+                }
             };
             _timer.Start();
         }
@@ -146,25 +153,25 @@ namespace MultiChat.Client.Components
             if (string.IsNullOrEmpty(connectionId))
                 return;
 
-            await hubConnection.SendAsync("UpdateUserConnection", UserId);
+            await _hubConnection.SendAsync("UpdateUserConnection", UserId);
         }
 
-        private string GetMessageCounter() => $"{_messageInput?.Length ?? 0} / {AllowedLength}";
+        private string GetMessageCounter() => $"{_messageInput?.Length ?? 0} / {_allowedLength}";
 
         async Task Send()
         {
-            await hubConnection.SendAsync("SendMessage", UserId, MessageInput);
+            await _hubConnection.SendAsync("SendMessage", UserId, MessageInput);
             MessageInput = string.Empty;
         }
 
         private bool IsSendBtnEnabled => !string.IsNullOrEmpty(MessageInput) && IsConnected;
 
         public bool IsConnected =>
-            hubConnection.State == HubConnectionState.Connected;
+            _hubConnection.State == HubConnectionState.Connected;
 
         public async ValueTask DisposeAsync()
         {
-            await hubConnection.DisposeAsync();
+            await _hubConnection.DisposeAsync();
             _timer?.Dispose();
             _timer = null;
         }

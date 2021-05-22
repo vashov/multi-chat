@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using MultiChat.Client.Services.RoomObserver;
+using MultiChat.Client.Services.RoomsManager;
 using MultiChat.Client.Services.Rooms;
 using MultiChat.Shared.Rooms.Create;
 using System;
@@ -56,6 +56,9 @@ namespace MultiChat.Client.Components
         [Inject]
         private IRoomService RoomService { get; set; }
 
+        [Inject]
+        private RoomsManagerService RoomsManager { get; set; }
+
         private CreateRoomModel Model { get; set; } = new CreateRoomModel();
 
         private ChatLiveTime DefaultChatLiveTime { get; set; }
@@ -103,7 +106,7 @@ namespace MultiChat.Client.Components
                 return;
             }
 
-            RoomObserver.ConnectRoom(new RoomObserver.RoomConnectedArgs
+            RoomsManager.ConnectRoom(new RoomsManagerService.RoomConnectedArgs
             {
                 RoomId = serviceResult.Result.RoomId,
                 RoomOwnerPublicId = serviceResult.Result.UserPublicId,
