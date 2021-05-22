@@ -235,8 +235,6 @@ namespace MultiChat.Client.Components
 
         private async void HandleEnterOnTextAreaPressed(KeyboardEventArgs e)
         {
-            string evtInfo = $"Textbox: {e.Type}, key: {e.Key}";
-            Console.WriteLine(evtInfo);
             if (e.Key == "Enter" && IsSendBtnEnabled)
             {
                 await Send();

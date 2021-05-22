@@ -65,8 +65,8 @@
                 @*<img class="k-card-image" src=@($"images/articles/{context.ImageUrl}") />*@
                 <!--</div>-->
                 
-                <div class="k-hbox justify-space-between px-3 py-1">
-                    <div class="k-hbox">
+                <div class="k-hbox px-3 py-1 @GetMessageClass(context.UserPublicId)">
+                    <div>
                         @*<div class="k-avatar-circle k-avatar-primary k-avatar-solid k-avatar avatar-size">
                                 <span class="k-avatar-text">JD</span>
                             </div>*@
@@ -76,7 +76,7 @@
                                 <span>
 
                                     <span class="comment-sender" style="word-break: break-word">@context.UserName</span>
-                                    <span>[@context.Code]</span>
+                                    <span class="k-text-disabled comment-sender-hash">[@context.Code]</span>
                                 </span>
                              }
                             <span class="comment-text rounded p-2" style="word-break: break-word">@context.Text</span>
@@ -103,3 +103,10 @@
         </div>
     </CardFooter>
 </TelerikCard>
+
+@code {
+    string GetMessageClass(Guid messageUserPublicId)
+    {
+        return messageUserPublicId == UserPublicId ? "flex-end" : "justify-space-between";
+    }
+} 
