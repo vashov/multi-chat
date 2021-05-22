@@ -1,0 +1,33 @@
+﻿
+@inherits LayoutComponentBase
+<div class="page">
+    @*<div class="sidebar">
+        <NavMenu />
+    </div>*@
+
+    <div class="main">
+        <div class="top-row px-4">
+            <TelerikButton OnClick="BeginRoomCreating" Primary="true">Create room</TelerikButton>
+            <TelerikButton OnClick="UseInvite" Class="mx-3 k-flat" Primary="true">Use invite</TelerikButton>
+            <a href="https://github.com/vashov/multi-chat" target="_blank" style="color:#00c853;" class="ml-md-auto">Github</a>
+        </div>
+
+        <div class="content px-4">
+            <TelerikRootComponent>
+                <MultiChat.Client.Components.CreateChatWindow @ref="CreateChatWindowInstance" />
+                <MultiChat.Client.Components.EnterChatWindow @ref="EnterChatWindowInstance" ShowInviteLinkInput="true" />
+                @Body
+            </TelerikRootComponent>
+        </div>
+    </div>
+</div>
+
+@*<header>
+    <NavMenu />
+</header>
+
+<div class="container">
+    <main role="main" class="pb-3">
+        @Body
+    </main>
+</div>*@

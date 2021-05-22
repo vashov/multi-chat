@@ -1,0 +1,45 @@
+﻿@page "/"
+@page "/invite/{inviteId}"
+
+<style>
+    div.k-tilelayout-item div.k-tilelayout-item-body {
+        padding: 0;
+    }
+
+        div.k-tilelayout-item div.k-tilelayout-item-body div.k-card {
+            border: none;
+        }
+</style>
+
+<TelerikMediaQuery Media="@MediaQuery" OnChange="@((doesMatch) => isSmallScreen = doesMatch)"></TelerikMediaQuery>
+
+<MultiChat.Client.Components.EnterChatWindow @ref="EnterChatWindowInstance" />
+
+<TelerikTileLayout Columns="@(isSmallScreen ? 2 : 4)"
+                   ColumnWidth="@(isSmallScreen ? "50%" : "25%")"
+                   RowHeight="235px"
+                   Height="100%"
+                   Reorderable="true"
+                   Resizable="false">
+
+    <TileLayoutItems>
+        @foreach (var item in Items)
+        {
+            <TileLayoutItem HeaderText="@item.RoomTopic" ColSpan="2" RowSpan="3">
+                <Content>
+                    <MultiChat.Client.Components.Chat UserId="item.UserId" 
+                                                      UserPublicId="item.UserPublicId"
+                                                      RoomId="item.RoomId"
+                                                      RoomOwnerPublicId="item.RoomOwnerPublicId"
+                                                      OnlyOwnerCanInvite="item.OnlyOwnerCanInvite"
+                                                      ExpireAt="item.RoomExpireAt"/>
+                </Content>
+            </TileLayoutItem>
+        }
+    </TileLayoutItems>
+</TelerikTileLayout>
+
+@code {
+    private string MediaQuery { get; set; } = "(max-width: 767px)";
+    private bool isSmallScreen { get; set; }
+}
