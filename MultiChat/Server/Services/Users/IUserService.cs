@@ -12,5 +12,7 @@ namespace MultiChat.Server.Services.Users
 
         User Get(Guid userId);
         List<User> List(List<Guid> users);
+
+        User FindByConnectionId(string connectionId);
     }
 }

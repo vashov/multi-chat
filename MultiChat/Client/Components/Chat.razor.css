@@ -28,6 +28,10 @@
     font-size: 10px;
 }
 
+.comment-system {
+    font-style: italic; 
+}
+
 .avatar-size {
     width: 35px !important;
     height: 35px !important;

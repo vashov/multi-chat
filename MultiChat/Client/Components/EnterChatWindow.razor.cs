@@ -9,6 +9,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using MultiChat.Client.Services.Notify;
+using Telerik.Blazor.Components;
 
 namespace MultiChat.Client.Components
 {
@@ -67,6 +69,9 @@ namespace MultiChat.Client.Components
         [Inject]
         private RoomsManagerService RoomsManager { get; set; }
 
+        [Inject]
+        private GlobalNotifyService NotifyService { get; set; }
+
         [Parameter]
         public bool ShowInviteLinkInput { get; set; }
 
@@ -105,13 +110,13 @@ namespace MultiChat.Client.Components
             var serviceResult = await RoomService.Enter(request);
             if (!serviceResult.IsOk)
             {
-                Console.WriteLine(serviceResult.ErrorMsg);
+                NotifyService.AddAutoClosingErrorNotification(serviceResult.ErrorMsg);
                 return;
             }
 
             if (RoomsManager.AlreadyInRoom(serviceResult.Result.RoomId))
             {
-                Console.WriteLine("You are already in room.");
+                NotifyService.AddAutoClosingErrorNotification("You are already in room.");
                 return;
             }
 

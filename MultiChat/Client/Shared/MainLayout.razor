@@ -14,6 +14,9 @@
 
         <div class="content px-4">
             <TelerikRootComponent>
+                <TelerikNotification Class="custom-notification-child"
+                                     VerticalPosition="NotificationVerticalPosition.Top"
+                                     @ref="@NotifyService.GlobalNotificationReference" />
                 <MultiChat.Client.Components.CreateChatWindow @ref="CreateChatWindowInstance" />
                 <MultiChat.Client.Components.EnterChatWindow @ref="EnterChatWindowInstance" ShowInviteLinkInput="true" />
                 @Body

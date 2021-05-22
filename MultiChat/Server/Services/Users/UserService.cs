@@ -37,6 +37,12 @@ namespace MultiChat.Server.Services.Users
             return resultUsers;
         }
 
+        public User FindByConnectionId(string connectionId)
+        {
+            var user = Users.FirstOrDefault(u => u.ConnectionId == connectionId);
+            return user;
+        }
+
         public bool UpdateConnection(Guid userId, string connectionId)
         {
             var user = Users.FirstOrDefault(u => u.Id == userId);

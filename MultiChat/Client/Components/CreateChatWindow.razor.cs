@@ -7,25 +7,15 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
+using MultiChat.Client.Services.Notify;
 
 namespace MultiChat.Client.Components
 {
     public partial class CreateChatWindow
     {
-        private bool _isModalVisible;
-        public bool IsModalVisible 
-        { 
-            get => _isModalVisible;
-            set
-            {
-                _isModalVisible = value;
-                StateHasChanged();
-            } 
-        }
-
         private class CreateRoomModel
         {
-            private const string TextRegex = "^[A-Za-z0-9]{1,}$";
+            private const string _textRegex = "^[A-Za-z0-9]{1,}$";
 
             [Required]
             [StringLength(maximumLength: 16, MinimumLength = 3)]
@@ -35,7 +25,7 @@ namespace MultiChat.Client.Components
 
             [Required]
             [StringLength(maximumLength: 16, MinimumLength = 3)]
-            [RegularExpression(TextRegex)]
+            [RegularExpression(_textRegex)]
             public string UserName { get; set; }
 
             public bool OnlyCreatorCanInvite { get; set; }
@@ -44,7 +34,14 @@ namespace MultiChat.Client.Components
                 text.Length < 3 || text.Length > 16 ? "text-danger" : "text-success";
 
             public string RegexValidation(string text) => text == null || 
-                !Regex.IsMatch(text, TextRegex) ? "text-danger" : "text-success";
+                !Regex.IsMatch(text, _textRegex) ? "text-danger" : "text-success";
+
+            public void Clear()
+            {
+                Topic = "";
+                UserName = "";
+                OnlyCreatorCanInvite = false;
+            }
         }
 
         private class ChatLiveTime
@@ -53,11 +50,25 @@ namespace MultiChat.Client.Components
             public string TimeDisplay { get; set; }
         }
 
+        private bool _isModalVisible;
+        public bool IsModalVisible
+        {
+            get => _isModalVisible;
+            set
+            {
+                _isModalVisible = value;
+                StateHasChanged();
+            }
+        }
+
         [Inject]
         private IRoomService RoomService { get; set; }
 
         [Inject]
         private RoomsManagerService RoomsManager { get; set; }
+
+        [Inject]
+        private GlobalNotifyService NotifyService { get; set; }
 
         private CreateRoomModel Model { get; set; } = new CreateRoomModel();
 
@@ -67,6 +78,7 @@ namespace MultiChat.Client.Components
         private List<ChatLiveTime> ChatLiveTimes { get; set; }
 
         private EditContext Context { get; set; }
+
         protected override void OnInitialized()
         {
             ChatLiveTimes = new List<ChatLiveTime>
@@ -89,7 +101,6 @@ namespace MultiChat.Client.Components
         {
             if (!Context.Validate())
                 return;
-            Console.WriteLine(Model.ChatLiveTime);
 
             var request = new CreateRequest()
             {
@@ -102,7 +113,7 @@ namespace MultiChat.Client.Components
             var serviceResult = await RoomService.Create(request);
             if (!serviceResult.IsOk)
             {
-                Console.WriteLine(serviceResult.ErrorMsg);
+                NotifyService.AddAutoClosingErrorNotification(serviceResult.ErrorMsg);
                 return;
             }
 
@@ -116,9 +127,10 @@ namespace MultiChat.Client.Components
                 RoomExpireAt = serviceResult.Result.RoomExpireAt,
                 OnlyOwnerCanInvite = serviceResult.Result.OnlyOwnerCanInvite
             });
-            //Navigator.NavigateTo($"/room/{serviceResult.Result:N}");
 
             IsModalVisible = false;
+            Model.Clear();
+
             Console.WriteLine("Room created");
         }
     }

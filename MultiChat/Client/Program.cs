@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MultiChat.Client.Services.Clipboard;
 using MultiChat.Client.Services.Invitations;
+using MultiChat.Client.Services.Notify;
 using MultiChat.Client.Services.Rooms;
 using MultiChat.Client.Services.RoomsManager;
 using System;
@@ -28,6 +29,7 @@ namespace MultiChat.Client
 
             builder.Services.AddScoped<ClipboardService>();
             builder.Services.AddSingleton<RoomsManagerService>();
+            builder.Services.AddSingleton<GlobalNotifyService>();
 
             builder.Services.AddTelerikBlazor();
 

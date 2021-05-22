@@ -62,22 +62,59 @@ namespace MultiChat.Server.Hubs
             UserService.UpdateConnection(userId, Context.ConnectionId);
         }
 
-        public override Task OnConnectedAsync()
+        public async override Task OnConnectedAsync()
         {
-            //string name = Context.User.Identity.Name;
             var httpContext = Context.GetHttpContext();
             string userIdToken = httpContext.Request.Query["userId"].FirstOrDefault();
             Guid userId = Guid.Parse(userIdToken);
             UserService.UpdateConnection(userId, Context.ConnectionId);
 
-            //_connections.Add(name, Context.ConnectionId);
+            await NotifyNewUserConnected(userId);
 
-            return base.OnConnectedAsync();
+            await base.OnConnectedAsync();
         }
 
-        public override Task OnDisconnectedAsync(Exception exception)
+        private async Task NotifyNewUserConnected(Guid userId)
         {
-            return base.OnDisconnectedAsync(exception);
+            await NotifyOthers(userId, "connected");
+        }
+
+        private async Task NotifyOthers(Guid userId, string text)
+        {
+            User sender = UserService.Get(userId);
+
+            List<Guid> userIds = RoomService.GetRoommates(userId);
+            if (userIds == null)
+                return;
+
+            List<User> users = UserService.List(userIds);
+
+            List<string> connections = users
+                .Where(u => u.ConnectionId != null && u.Id != userId)
+                .Select(u => u.ConnectionId)
+                .ToList();
+
+            var sendMessage = new SendMessage
+            {
+                UserName = sender.Name,
+                UserPublicId = Guid.Empty,
+                Date = DateTime.UtcNow,
+                Text = text,
+                MessageType = Shared.Messages.SendMessage.MessageTypeEnum.System
+            };
+
+            await Clients.Clients(connections).SendAsync("ReceiveMessage", sendMessage);
+        }
+
+        public async override Task OnDisconnectedAsync(Exception exception)
+        {
+            var user = UserService.FindByConnectionId(Context.ConnectionId);
+            if (user != null)
+            {
+                await NotifyOthers(user.Id, "left");
+            }
+
+            await base.OnDisconnectedAsync(exception);
         }
     }
 }

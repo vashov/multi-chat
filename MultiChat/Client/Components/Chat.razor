@@ -10,81 +10,57 @@
 
     .custom-notification-child {
         position: absolute;
-        z-index: 1234;
+        z-index: 10005;
+        margin: 10px;
+        margin-top: 5px;
     }
 </style>
 
-
-
+@using MultiChat.Shared.Messages
+ 
 <TelerikCard Width="100%" Class="h-100 custom-notification-parent">
     <TelerikNotification Class="custom-notification-child"
                          VerticalPosition="NotificationVerticalPosition.Top"
                          @ref="@NotificationReference" />
-    <!--<CardActions Class="justify-space-between h-auto">
-        <div>-->
-    @*<TelerikButton Class="@($"k-flat {item.LikeActionClass}")" Icon="@item.LikeActionIcon" Title="Like" OnClick="(() => item.PostLiked = !item.PostLiked)"></TelerikButton>*@
-    <!--<TelerikButton Class="k-flat" Icon="comment" Title="Comment" OnClick="@ShowUserList"></TelerikButton>
-            <TelerikButton Class="k-flat" Icon="share" Title="Share" OnClick="@CopyInviteLink"></TelerikButton>
-        </div>
-        <span class="post-likes-count">@UsersCount</span>
-    </CardActions>-->
-
     <CardBody Class="h-75 p-0">
         <div class="h-auto">
             <div>
-                @*<TelerikButton Class="@($"k-flat {item.LikeActionClass}")" Icon="@item.LikeActionIcon" Title="Like" OnClick="(() => item.PostLiked = !item.PostLiked)"></TelerikButton>*@
-                @*<TelerikButton Class="k-flat" Icon="comment" Title="Comment" OnClick="@ShowUserList"></TelerikButton>*@
                 @if (CanInvite)
                 {
                     <TelerikButton Class="k-flat" Icon="copy" Title="Copy link" OnClick="@CopyInviteLink">Invite</TelerikButton>
 
                 }
                 <TelerikButton Class="k-float-right k-flat" Icon="clock" Enabled="false">@TimerDisplay</TelerikButton>
-                @*<label class="k-float-right m-1">@TimerDisplay</label>*@
-                @*<span class="post-likes-count">@UsersCount</span>*@
             </div>
         </div>
         <TelerikListView Data=@Messages
                          Height="95%">
-            @*<HeaderTemplate>
-                    Trending articles this week
-                </HeaderTemplate>*@
             <Template>
-                <!--<div class="k-card k-card-horizontal">
-                <div class="k-vbox k-column">
-                    <div class="k-card-body">
-                        <h4 class="k-card-title">@context.Text</h4>-->
-                @*<h5 class="k-card-subtitle">@context.Subtitle</h5>*@
-                @*<div class="card-date">@context.Date.ToString("MMM dd yyyy")</div>*@
-                <!--</div>-->
-                @*<div class="k-card-actions k-card-actions-horizontal k-card-actions-start">
-                        <ListViewCommandButton OnClick="@SaveForLater" Enabled="@(!SavedArticles.Contains(context))" Class="k-flat">Save for later</ListViewCommandButton>
-                        <ListViewCommandButton OnClick="@AddFavorite" Enabled="@(!Favorites.Contains(context))" Class="k-flat">Add to favorites</ListViewCommandButton>
-                    </div>*@
-                <!--</div>-->
-                @*<img class="k-card-image" src=@($"images/articles/{context.ImageUrl}") />*@
-                <!--</div>-->
-                
-                <div class="k-hbox px-3 py-1 @GetMessageClass(context.UserPublicId)">
+                <div class="k-hbox px-3 py-1 @GetMessageClass(context.MessageType, context.UserPublicId)">
                     <div>
-                        @*<div class="k-avatar-circle k-avatar-primary k-avatar-solid k-avatar avatar-size">
-                                <span class="k-avatar-text">JD</span>
-                            </div>*@
                         <div class="k-vbox">
-                            @if (context.PrevMessage == null || context.PrevMessage.UserPublicId != context.UserPublicId)
-                            {
-                                <span>
+                            @if (context.MessageType == SendMessage.MessageTypeEnum.User)
+                            { 
+                                @if (context.PrevMessage == null || context.PrevMessage.UserPublicId != context.UserPublicId)
+                                {
+                                    <span>
 
-                                    <span class="comment-sender" style="word-break: break-word">@context.UserName</span>
-                                    <span class="k-text-disabled comment-sender-hash">[@context.Code]</span>
+                                        <span class="comment-sender" style="word-break: break-word">@context.UserName</span>
+                                        <span class="k-text-disabled comment-sender-hash">[@context.Code]</span>
+                                    </span>
+
+                                }
+                                <span class="comment-text rounded p-2" style="word-break: break-word">@context.Text</span>
+                            }
+                            else
+                            {
+                                <span class="comment-system k-text-disabled p-2" style="word-break: break-word">
+                                    <span class="k-font-weight-bold">@context.UserName</span><span class="k-ml-1">@context.Text</span>
                                 </span>
-                             }
-                            <span class="comment-text rounded p-2" style="word-break: break-word">@context.Text</span>
+                            }
                         </div>
                     </div>
-
                 </div>
-
             </Template>
         </TelerikListView>
     </CardBody>
@@ -105,8 +81,10 @@
 </TelerikCard>
 
 @code {
-    string GetMessageClass(Guid messageUserPublicId)
+    string GetMessageClass(SendMessage.MessageTypeEnum messageType, Guid messageUserPublicId)
     {
+        if (messageType == SendMessage.MessageTypeEnum.System)
+            return "justify-center";
         return messageUserPublicId == UserPublicId ? "flex-end" : "justify-space-between";
     }
 } 
