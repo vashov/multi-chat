@@ -64,15 +64,22 @@
                 <!--</div>-->
                 @*<img class="k-card-image" src=@($"images/articles/{context.ImageUrl}") />*@
                 <!--</div>-->
-
-                <div class="k-hbox justify-space-between mb-xs px-3 py-1">
-                    <div class="k-hbox mb-xs">
+                
+                <div class="k-hbox justify-space-between px-3 py-1">
+                    <div class="k-hbox">
                         @*<div class="k-avatar-circle k-avatar-primary k-avatar-solid k-avatar avatar-size">
                                 <span class="k-avatar-text">JD</span>
                             </div>*@
                         <div class="k-vbox">
-                            <span class="comment-sender" style="word-break: break-word">@context.Sender</span>
-                            <span class="comment-text" style="word-break: break-word">@context.Text</span>
+                            @if (context.PrevMessage == null || context.PrevMessage.UserPublicId != context.UserPublicId)
+                            {
+                                <span>
+
+                                    <span class="comment-sender" style="word-break: break-word">@context.UserName</span>
+                                    <span>[@context.Code]</span>
+                                </span>
+                             }
+                            <span class="comment-text rounded p-2" style="word-break: break-word">@context.Text</span>
                         </div>
                     </div>
 
@@ -82,19 +89,17 @@
         </TelerikListView>
     </CardBody>
     <CardFooter Class="h-25">
-        <TelerikTextArea @bind-Value="@MessageInput"
-                         Width="100%"
-                         Class="mb-xs"
-                         AutoSize="true"
-                         Label="Enter message">
-        </TelerikTextArea>
-
+        <span @onkeydown="@HandleEnterOnTextAreaPressed">
+            <TelerikTextArea @bind-Value="@MessageInput"
+                             Width="100%"
+                             Class="mb-xs"
+                             AutoSize="true"
+                             Label="Enter message">
+            </TelerikTextArea>
+        </span>
+        
         <div class="align-end">
             <TelerikButton Class="k-flat" Primary="true" Enabled="@IsSendBtnEnabled" OnClick="@Send">Send</TelerikButton>
         </div>
     </CardFooter>
 </TelerikCard>
-
-@code {
-
-}

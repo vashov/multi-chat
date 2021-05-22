@@ -2,6 +2,7 @@
 using MultiChat.Server.Models;
 using MultiChat.Server.Services.Rooms;
 using MultiChat.Server.Services.Users;
+using MultiChat.Shared.Messages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,7 +41,16 @@ namespace MultiChat.Server.Hubs
                 .Select(u => u.ConnectionId)
                 .ToList();
 
-            await Clients.Clients(connections).SendAsync("ReceiveMessage", sender.Name, message);
+            var sendMessage = new SendMessage
+            {
+                UserName = sender.Name,
+                UserPublicId = sender.PublicId,
+                Date = DateTime.UtcNow,
+                Text = message,
+                MessageType = Shared.Messages.SendMessage.MessageTypeEnum.User
+            };
+
+            await Clients.Clients(connections).SendAsync("ReceiveMessage", sendMessage);
         }
 
         public async Task UpdateUserConnection(string user)

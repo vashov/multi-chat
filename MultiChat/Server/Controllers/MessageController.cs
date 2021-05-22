@@ -24,16 +24,16 @@ namespace MultiChat.Server.Controllers
             _messageService = messageService;
         }
 
-        [HttpPost("[action]")]
-        public IActionResult Create(CreateRequest request)
-        {
-            Room room = _roomService.GetByUser(request.UserId);
-            if (room == null)
-                return NotFound();
+        //[HttpPost("[action]")]
+        //public IActionResult Create(CreateRequest request)
+        //{
+        //    Room room = _roomService.GetByUser(request.UserId);
+        //    if (room == null)
+        //        return NotFound();
 
-            _messageService.Create(room.Id, request.UserId, room.ExpireAt, request.Text);
+        //    _messageService.Create(room.Id, request.UserId, room.ExpireAt, request.Text);
 
-            return Ok();
-        }
+        //    return Ok();
+        //}
     }
 }

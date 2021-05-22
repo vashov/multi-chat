@@ -1,13 +1,16 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.SignalR.Client;
 using MultiChat.Client.Services.Clipboard;
 using MultiChat.Client.Services.Invitations;
 using MultiChat.Shared.Invitations.Create;
+using MultiChat.Shared.Messages;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Timers;
 using Telerik.Blazor.Components;
 
 namespace MultiChat.Client.Components
@@ -16,10 +19,14 @@ namespace MultiChat.Client.Components
     {
         private class Message
         {
-            public string Sender { get; set; }
+            public string Code { get; set; }
+            public string UserName { get; set; }
             public Guid UserPublicId { get; set; }
             public string Text { get; set; }
             public DateTime Date { get; set; }
+            public SendMessage.MessageTypeEnum MessageType { get; set; }
+
+            public Message PrevMessage { get; set; }
         }
 
         [Parameter]
@@ -80,7 +87,7 @@ namespace MultiChat.Client.Components
             get => _messageInput;
             set
             {
-                value = value?.Replace('\n', ' ');
+                value = value?.Replace("\n", null);
                 int len = (value?.Length ?? 0) < _allowedLength ? value?.Length ?? 0 : _allowedLength;
                 _messageInput = value?.Substring(0, len);
                 MessageCounter = GetMessageCounter();
@@ -92,7 +99,18 @@ namespace MultiChat.Client.Components
         private string MessageCounterClass => (MessageInput?.Length ?? 0) >= _allowedLength ? "text-danger" : "text-success";
 
         private string MessageCounter { get; set; }
+
         protected override async Task OnInitializedAsync()
+        {
+            Console.WriteLine($"Chat OnInitialized {RoomId}");
+
+            InitializeTimer();
+            await InitializeHubConnection();
+
+            MessageCounter = GetMessageCounter();
+        }
+
+        private async Task InitializeHubConnection()
         {
             _hubConnection = new HubConnectionBuilder()
                 .WithUrl(NavigationManager.ToAbsoluteUri($"/hub/chat?userId={UserId}"))
@@ -101,43 +119,60 @@ namespace MultiChat.Client.Components
 
             _hubConnection.Reconnected += HubConnection_Reconnected;
 
-            _hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
-            {
-                var encodedMsg = $"{user}: {message}";
+            _hubConnection.On<SendMessage>("ReceiveMessage", HandleReceiveMessage);
 
-                var messageInfo = new Message
-                {
-                    Sender = user,
-                    Text = message,
-                    Date = DateTime.UtcNow
-                };
-
-                Messages.Add(messageInfo);
-                StateHasChanged();
-            });
-
-            MessageCounter = GetMessageCounter();
 
             await _hubConnection.StartAsync();
         }
 
-        protected override void OnInitialized()
+        private void InitializeTimer()
         {
             TimerDisplay = GetLeftTime().ToString(@"hh\:mm\:ss");
 
-            Console.WriteLine($"Chat OnInitialized {RoomId}");
             _timer = new System.Timers.Timer(TimeSpan.FromSeconds(1).TotalMilliseconds);
-            _timer.Elapsed += (e, o) =>
-            {
-                TimeSpan lefttime = GetLeftTime();
-                TimerDisplay = lefttime.ToString(@"hh\:mm\:ss");
-
-                if (lefttime == TimeSpan.Zero)
-                {
-                    CloseChat.Invoke(RoomId);
-                }
-            };
+            _timer.Elapsed += UpdateTimer;
             _timer.Start();
+        }
+
+        private void UpdateTimer(object sender, ElapsedEventArgs e)
+        {
+            TimeSpan lefttime = GetLeftTime();
+            TimerDisplay = lefttime.ToString(@"hh\:mm\:ss");
+
+            if (lefttime == TimeSpan.Zero)
+            {
+                CloseChat.Invoke(RoomId);
+            }
+        }
+
+        private void HandleReceiveMessage(SendMessage message)
+        {
+            string code = message.UserPublicId.ToString("N");
+            code = code.Substring(code.Length - 5);
+
+            var messageInfo = new Message
+            {
+                Code = code,
+                UserName = message.UserName,
+                UserPublicId = message.UserPublicId,
+                Text = message.Text,
+                Date = message.Date,
+                MessageType = message.MessageType
+            };
+
+            if (Messages.Any())
+            {
+                var lastMessage = Messages.Last();
+                messageInfo.PrevMessage = lastMessage;
+            }
+
+            Messages.Add(messageInfo);
+            StateHasChanged();
+        }
+
+        protected override void OnInitialized()
+        {
+            
         }
 
         private TimeSpan GetLeftTime()
@@ -196,6 +231,16 @@ namespace MultiChat.Client.Components
             string inviteLink = NavigationManager.ToAbsoluteUri($"/invite/{invitationId}").AbsoluteUri;
             await ClipboardService.WriteTextAsync(inviteLink);
             AddAutoClosingNotification("Invite link was copied", "success", "clipboard");
+        }
+
+        private async void HandleEnterOnTextAreaPressed(KeyboardEventArgs e)
+        {
+            string evtInfo = $"Textbox: {e.Type}, key: {e.Key}";
+            Console.WriteLine(evtInfo);
+            if (e.Key == "Enter" && IsSendBtnEnabled)
+            {
+                await Send();
+            }
         }
 
         private void ShowUserList()
