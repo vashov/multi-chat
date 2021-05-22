@@ -28,13 +28,6 @@ namespace MultiChat.Client.Pages
             RoomObserver.RoomConnected += RoomObserver_RoomConnected;
         }
 
-        protected override Task OnParametersSetAsync()
-        {
-            
-
-            return base.OnParametersSetAsync();
-        }
-
         protected override void OnAfterRender(bool firstRender)
         {
             base.OnAfterRender(firstRender);

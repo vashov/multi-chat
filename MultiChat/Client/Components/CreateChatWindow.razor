@@ -1,6 +1,6 @@
 ﻿<TelerikWindow Modal="true" @bind-Visible="@IsModalVisible">
     <WindowTitle>
-        <strong>New room</strong>
+        <strong>Room settings</strong>
     </WindowTitle>
     <WindowContent>
         <TelerikForm EditContext="Context">
@@ -24,7 +24,6 @@
                                              Data="ChatLiveTimes"
                                              TextField="TimeDisplay"
                                              ValueField="Time" />
-                        @*DefaultItem="DefaultChatLiveTime"*@
                     </Template>
                 </FormItem>
                 <FormItem>
@@ -56,5 +55,3 @@
         <WindowAction Name="Close" />
     </WindowActions>
 </TelerikWindow>
-
-@*<TelerikButton OnClick="@( _ => IsModalVisible = true )">Open the window</TelerikButton>*@
