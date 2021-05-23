@@ -19,17 +19,17 @@
 <MultiChat.Client.Components.Wellcome IsVisible="RoomManager.Rooms.IsNullOrEmpty()" />
 @if (RoomManager.Rooms.HasAny())
 {
-    <TelerikTileLayout Columns="@(isSmallScreen ? 2 : 4)"
-                       ColumnWidth="@(isSmallScreen ? "50%" : "25%")"
-                       RowHeight="235px"
+    <TelerikTileLayout Columns="@(isSmallScreen ? 1 : 4)"
+                       ColumnWidth="@(isSmallScreen ? "100%" : "50%")"
+                       RowHeight="630px"
                        Height="100%"
                        Reorderable="true"
-                       Resizable="false">
+                       Resizable="true">
 
         <TileLayoutItems>
             @foreach (var item in RoomManager.Rooms)
             {
-                <TileLayoutItem HeaderText="@item.RoomTopic" ColSpan="2" RowSpan="3">
+                <TileLayoutItem HeaderText="@item.RoomTopic" ColSpan="2" RowSpan="1">
                     <Content>
                         <MultiChat.Client.Components.Chat UserId="item.UserId"
                                                           UserPublicId="item.UserPublicId"

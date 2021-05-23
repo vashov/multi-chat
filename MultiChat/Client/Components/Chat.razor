@@ -14,6 +14,11 @@
         margin: 10px;
         margin-top: 5px;
     }
+
+    /*.k-textarea textarea {*/
+        /*overflow-y: scroll;*/
+        /*max-height: 100px!important;
+    }*/
 </style>
 
 @using MultiChat.Shared.Messages
@@ -22,7 +27,7 @@
     <TelerikNotification Class="custom-notification-child"
                          VerticalPosition="NotificationVerticalPosition.Top"
                          @ref="@NotificationReference" />
-    <CardBody Class="h-75 p-0">
+    <CardBody Class="h-25 p-0">
         <div class="h-auto">
             <div>
                 <TelerikButton Class="k-flat" Icon="copy" Title="Copy link" OnClick="@CopyInviteLink" Enabled="CanInvite" Primary="true">Invite</TelerikButton>
@@ -58,13 +63,13 @@
             </Template>
         </TelerikListView>
     </CardBody>
-    <CardFooter Class="h-25">
+    <CardFooter>
         <span @onkeydown="@HandleEnterOnTextAreaPressed">
             <TelerikTextArea @bind-Value="@MessageInput"
                              Width="100%"
-                             Class="mb-xs"
-                             AutoSize="true"
-                             Label="Enter message">
+                             Class="mb-xs mt-lg"
+                             Label="Enter message"
+                             AutoSize="true">
             </TelerikTextArea>
         </span>
         
