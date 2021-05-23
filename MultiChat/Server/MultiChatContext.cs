@@ -26,49 +26,59 @@ namespace MultiChat.Server
             {
                 e.HasMany(e => e.InvitedUsers)
                 .WithOne(u => u.Invitation)
-                .HasForeignKey(e => e.InvitationId);
+                .HasForeignKey(e => e.InvitationId)
+                .OnDelete(DeleteBehavior.Cascade);
 
                 e.HasOne(e => e.Owner)
                 .WithMany(e => e.InvitationsCreated)
-                .HasForeignKey(e => e.OwnerId);
+                .HasForeignKey(e => e.OwnerId)
+                .OnDelete(DeleteBehavior.Cascade);
 
                 e.HasOne(e => e.Room)
                 .WithMany(e => e.Invitations)
-                .HasForeignKey(e => e.RoomId);
+                .HasForeignKey(e => e.RoomId)
+                .OnDelete(DeleteBehavior.Cascade);
             });
 
             builder.Entity<Room>(e =>
             {
                 e.HasOne(e => e.Owner)
                 .WithOne(e => e.RoomCreated)
-                .HasForeignKey<User>(e => e.RoomCreatedId);
+                .HasForeignKey<User>(e => e.RoomCreatedId)
+                .OnDelete(DeleteBehavior.Cascade);
 
                 e.HasMany(e => e.Users)
                 .WithOne(e => e.Room)
-                .HasForeignKey(e => e.RoomId);
+                .HasForeignKey(e => e.RoomId)
+                .OnDelete(DeleteBehavior.Cascade);
 
                 e.HasMany(e => e.Invitations)
                 .WithOne(e => e.Room)
-                .HasForeignKey(e => e.RoomId);
+                .HasForeignKey(e => e.RoomId)
+                .OnDelete(DeleteBehavior.Cascade);
             });
 
             builder.Entity<User>(e =>
             {
                 e.HasOne(e => e.RoomCreated)
                 .WithOne(e => e.Owner)
-                .HasForeignKey<Room>(e => e.OwnerId);
+                .HasForeignKey<Room>(e => e.OwnerId)
+                .OnDelete(DeleteBehavior.Cascade);
 
                 e.HasOne(e => e.Room)
                 .WithMany(e => e.Users)
-                .HasForeignKey(e => e.RoomId);
+                .HasForeignKey(e => e.RoomId)
+                .OnDelete(DeleteBehavior.Cascade);
 
                 e.HasOne(e => e.Invitation)
                 .WithMany(e => e.InvitedUsers)
-                .HasForeignKey(e => e.InvitationId);
+                .HasForeignKey(e => e.InvitationId)
+                .OnDelete(DeleteBehavior.Cascade);
 
                 e.HasMany(e => e.InvitationsCreated)
                 .WithOne(e => e.Owner)
-                .HasForeignKey(e => e.OwnerId);
+                .HasForeignKey(e => e.OwnerId)
+                .OnDelete(DeleteBehavior.Cascade);
             });
         }
     }

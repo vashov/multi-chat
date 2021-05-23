@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MultiChat.Server.Models;
+using MultiChat.Shared.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -93,15 +94,15 @@ namespace MultiChat.Server.Services.Rooms
             return room;
         }
 
-        public async Task<Room> GetByUser(Guid userId)
-        {
-            User user = await Context.Users
-                .AsNoTracking()
-                .Include(u => u.Room)
-                .FirstOrDefaultAsync(u => u.Id == userId);
+        //public async Task<Room> GetByUser(Guid userId)
+        //{
+        //    User user = await Context.Users
+        //        .AsNoTracking()
+        //        .Include(u => u.Room)
+        //        .FirstOrDefaultAsync(u => u.Id == userId);
 
-            return user.Room;
-        }
+        //    return user.Room;
+        //}
 
         public async Task<List<User>> GetRoommates(Guid userId)
         {
@@ -113,6 +114,24 @@ namespace MultiChat.Server.Services.Rooms
                 return null;
 
             return room.Users;
+        }
+
+        public async Task ClearExpired()
+        {
+            // TODO: move to separate job
+
+            var rooms = await Context.Rooms
+                .Include(r => r.Owner)
+                .Include(r => r.Users)
+                .Include(r => r.Invitations)
+                .Where(r => r.ExpireAt + TimeSpan.FromMinutes(1) < DateTime.UtcNow)
+                .ToListAsync();
+
+            if (rooms.IsNullOrEmpty())
+                return;
+
+            Context.Rooms.RemoveRange(rooms);
+            await Context.SaveChangesAsync();
         }
     }
 }

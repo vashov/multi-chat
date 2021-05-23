@@ -33,6 +33,8 @@ namespace MultiChat.Server.Controllers
         [HttpPost("[action]")]
         public async Task<ActionResult<OperationResult<CreateResponse>>> Create(CreateRequest request)
         {
+            await _roomService.ClearExpired();
+
             TimeSpan lifespan = TimeSpan.Parse(request.ChatLifespan);
             DateTimeOffset expireAt = DateTimeOffset.UtcNow + lifespan;
 
@@ -54,6 +56,8 @@ namespace MultiChat.Server.Controllers
         [HttpPost("[action]")]
         public async Task<ActionResult<OperationResult<EnterResponse>>> Enter(EnterRequest request)
         {
+            await _roomService.ClearExpired();
+
             var invitation = await _invitationService.Get(request.Invite);
             if (invitation == null)
                 return OperationResult<EnterResponse>.Error("Invitation not found.");
