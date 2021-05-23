@@ -8,9 +8,12 @@ namespace MultiChat.Server.Models
         public Guid Id { get; set; }
 
         public Guid OwnerId { get; set; }
-        public Guid RoomId { get; set; }
+        public User Owner { get; set; }
 
-        public List<Guid> InvitedUsers { get; set; } = new List<Guid>();
+        public Guid RoomId { get; set; }
+        public Room Room { get; set; }
+
+        public List<User> InvitedUsers { get; set; } = new List<User>();
 
         public bool IsPermanent { get; set; }
 

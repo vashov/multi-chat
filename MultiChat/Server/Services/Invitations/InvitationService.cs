@@ -1,49 +1,41 @@
-﻿using MultiChat.Server.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using MultiChat.Server.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace MultiChat.Server.Services.Invitations
 {
-    public class InvitationService : IInvitationService
+    public class InvitationService
     {
-        private List<Invitation> Invitations { get; } = new List<Invitation>();
-
-        public bool TryUse(Guid userId, Guid invitationId)
+        public InvitationService(MultiChatContext context)
         {
-            var invitation = Invitations
-                .FirstOrDefault(i => i.Id == invitationId && i.ExpireAt > DateTimeOffset.UtcNow);
-
-            if (invitation == null)
-                return false;
-
-            if (!invitation.IsPermanent && invitation.InvitedUsers.Any())
-                return false;
-
-            invitation.InvitedUsers.Add(userId);
-            return true;
+            Context = context;
         }
 
-        public Invitation Get(Guid invitationId)
+        public MultiChatContext Context { get; }
+
+        public async Task<Invitation> Get(Guid invitationId)
         {
-            var invitation = Invitations.FirstOrDefault(i => i.Id == invitationId);
+            var invitation = await Context.Invitations
+                .AsNoTracking()
+                .FirstOrDefaultAsync(i => i.Id == invitationId);
 
             return invitation;
         }
 
-        public Guid Create(Guid userId, Guid roomId, bool isPermanent, DateTimeOffset expireAt)
+        public async Task<Invitation> Create(Guid userId, Guid roomId, bool isPermanent, DateTimeOffset expireAt)
         {
             var invitation = new Invitation
             {
-                Id = Guid.NewGuid(),
                 OwnerId = userId,
                 RoomId = roomId,
                 IsPermanent = isPermanent,
                 ExpireAt = expireAt
             };
 
-            Invitations.Add(invitation);
-            return invitation.Id;
+            Context.Invitations.Add(invitation);
+            await Context.SaveChangesAsync();
+            return invitation;
         }
     }
 }

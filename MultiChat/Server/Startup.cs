@@ -1,14 +1,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MultiChat.Server.Hubs;
 using MultiChat.Server.Services.Invitations;
-using MultiChat.Server.Services.Messages;
 using MultiChat.Server.Services.Rooms;
 using MultiChat.Server.Services.Users;
 using System.Linq;
@@ -24,17 +22,19 @@ namespace MultiChat.Server
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IRoomService, RoomService>();
-            services.AddSingleton<IInvitationService, InvitationService>();
-            services.AddSingleton<IMessageService, MessageService>();
-            services.AddSingleton<IUserService, UserService>();
+            services.AddScoped<RoomService>();
+            services.AddScoped<InvitationService>();
+            services.AddScoped<UserService>();
 
             services.AddSignalR();
-            //services.AddSingleton<IUserIdProvider, RoomUserIdProvider>();
+
+            services.AddDbContext<MultiChatContext>(opt =>
+            {
+                opt.UseSnakeCaseNamingConvention();
+                opt.UseInMemoryDatabase("multichat");
+            });
 
             services.AddControllersWithViews();
 
@@ -47,7 +47,6 @@ namespace MultiChat.Server
             });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseResponseCompression();

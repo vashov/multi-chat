@@ -1,74 +1,114 @@
-﻿using MultiChat.Server.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using MultiChat.Server.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MultiChat.Server.Services.Rooms
 {
-    public class RoomService : IRoomService
+    public class RoomService
     {
-        private List<Room> Rooms { get; } = new List<Room>();
+        public MultiChatContext Context { get; }
 
-        public bool CheckUserCanInvite(Guid userId, Guid roomId)
+        public RoomService(MultiChatContext context)
         {
-            var room = Rooms.FirstOrDefault(r => r.Id == roomId);
+            Context = context;
+        }
+
+        public async Task<bool> CheckUserCanInvite(Guid userId, Guid roomId)
+        {
+            var room = await Context.Rooms
+                .AsNoTracking()
+                .Include(r => r.Users)
+                .FirstOrDefaultAsync(r => r.Id == roomId);
+
             if (room == null)
                 return false;
 
             if (room.OnlyOwnerCanInvite && room.OwnerId != userId)
                 return false;
 
-            if (!room.Users.Contains(userId))
+            if (!room.Users.Any(u => u.Id == userId))
                 return false;
 
             return true;
         }
 
-        public Guid Create(Guid ownerId, string topic, DateTimeOffset expireAt, bool onlyOwnerCanInvite)
+        public async Task<Room> Create(string username, int usercolor, string topic, DateTimeOffset expireAt, bool onlyOwnerCanInvite)
         {
+            var user = new User
+            {
+                PublicId = Guid.NewGuid(),
+                Name = username,
+                Color = usercolor,
+                ExpireAt = expireAt
+            };
+
             var room = new Room
             {
                 Id = Guid.NewGuid(),
                 Topic = topic,
-                OwnerId = ownerId,
+                Owner = user,
                 OnlyOwnerCanInvite = onlyOwnerCanInvite,
                 ExpireAt = expireAt,
-                Users = new List<Guid> { ownerId }
+                Users = new List<User> { user }
             };
 
-            Rooms.Add(room);
+            Context.Rooms.Add(room);
+            await Context.SaveChangesAsync();
 
-            return room.Id;
+            return room;
         }
 
-        public bool TryEnter(Guid userId, Guid roomId)
+        public async Task<User> TryEnter(string username, int usercolor, Guid roomId)
         {
-            var room = Rooms.FirstOrDefault(r => r.Id == roomId);
+            //TODO: Add Timestamp for optimistic concurrency controll
+            Room room = await Context.Rooms
+                .Include(r => r.Users)
+                .FirstOrDefaultAsync(r => r.Id == roomId);
             if (room == null)
-                return false;
+                return null;
 
-            if (room.Users.Contains(userId))
-                return false;
+            var user = new User
+            {
+                PublicId = Guid.NewGuid(),
+                Name = username,
+                Color = usercolor,
+                ExpireAt = room.ExpireAt,
+                Room = room,
+            };
 
-            room.Users.Add(userId);
-            return true;
+            room.Users.Add(user);
+            await Context.SaveChangesAsync();
+            return user;
         }
 
-        public Room Get(Guid roomId)
+        public async Task<Room> Get(Guid roomId)
         {
-            var room = Rooms.FirstOrDefault(r => r.Id == roomId);
+            var room = await Context.Rooms
+                .AsNoTracking()
+                .Include(r => r.Users)
+                .FirstOrDefaultAsync(r => r.Id == roomId);
             return room;
         }
 
-        public Room GetByUser(Guid userId)
+        public async Task<Room> GetByUser(Guid userId)
         {
-            Room room = Rooms.FirstOrDefault(r => r.Users.Contains(userId));
-            return room;
+            User user = await Context.Users
+                .AsNoTracking()
+                .Include(u => u.Room)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            return user.Room;
         }
 
-        public List<Guid> GetRoommates(Guid userId)
+        public async Task<List<User>> GetRoommates(Guid userId)
         {
-            Room room = Rooms.FirstOrDefault(r => r.Users.Contains(userId));
+            Room room = await Context.Rooms
+                .AsNoTracking()
+                .Include(r => r.Users)
+                .FirstOrDefaultAsync(r => r.Users.Any(u => u.Id == userId));
             if (room == null)
                 return null;
 

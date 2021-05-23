@@ -1,63 +1,63 @@
-﻿using MultiChat.Server.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using MultiChat.Server.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace MultiChat.Server.Services.Users
 {
-    public class UserService : IUserService
+    public class UserService
     {
-        private List<User> Users { get; } = new List<User>();
-
-        public User Create(string name, int color, DateTimeOffset expireAt)
+        public UserService(MultiChatContext context)
         {
-            var user = new User
-            {
-                Id = Guid.NewGuid(),
-                PublicId = Guid.NewGuid(),
-                Name = name,
-                Color = color,
-                ExpireAt = expireAt
-            };
+            Context = context;
+        }
 
-            Users.Add(user);
+        public MultiChatContext Context { get; }
+
+        //public async Task<User> Create(string name, int color, DateTimeOffset expireAt)
+        //{
+        //    var user = new User
+        //    {
+        //        Id = Guid.NewGuid(),
+        //        PublicId = Guid.NewGuid(),
+        //        Name = name,
+        //        Color = color,
+        //        ExpireAt = expireAt
+        //    };
+
+        //    Context.Users.Add(user);
+        //    await Context.SaveChangesAsync();
+        //    return user;
+        //}
+
+        public async Task<User> Get(Guid userId)
+        {
+            var user = await Context.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Id == userId);
             return user;
         }
 
-        public User Get(Guid userId)
+        //public async Task<List<User>> List(List<Guid> users)
+        //{
+        //    List<User> resultUsers = await Context.Users.Where(u => users.Contains(u.Id))
+        //        .ToListAsync();
+
+        //    return resultUsers;
+        //}
+
+        public async Task<User> FindByConnectionId(string connectionId)
         {
-            var user = Users.FirstOrDefault(u => u.Id == userId);
+            var user = await Context.Users.FirstOrDefaultAsync(u => u.ConnectionId == connectionId);
             return user;
         }
 
-        public List<User> List(List<Guid> users)
+        public async Task<bool> UpdateConnection(Guid userId, string connectionId)
         {
-            List<User> resultUsers = Users.Where(u => users.Contains(u.Id ))
-                .ToList();
-
-            return resultUsers;
-        }
-
-        public User FindByConnectionId(string connectionId)
-        {
-            var user = Users.FirstOrDefault(u => u.ConnectionId == connectionId);
-            return user;
-        }
-
-        public bool UpdateConnection(Guid userId, string connectionId)
-        {
-            var user = Users.FirstOrDefault(u => u.Id == userId);
+            var user = await Context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             user.ConnectionId = connectionId;
+            await Context.SaveChangesAsync();
             return true;
         }
-
-        //public User Get(Guid userId)
-        //{
-        //    var search = new User { Id = userId };
-        //    if (Users.TryGetValue(search, out User user))
-        //        return user;
-
-        //    throw new ArgumentException();
-        //}
     }
 }

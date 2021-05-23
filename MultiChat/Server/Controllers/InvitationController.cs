@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MultiChat.Server.Models;
 using MultiChat.Server.Services.Invitations;
 using MultiChat.Server.Services.Rooms;
-using MultiChat.Server.Services.Users;
 using MultiChat.Shared;
 using MultiChat.Shared.Invitations.Create;
-using System;
+using System.Threading.Tasks;
 
 namespace MultiChat.Server.Controllers
 {
@@ -12,32 +12,29 @@ namespace MultiChat.Server.Controllers
     [ApiController]
     public class InvitationController : ControllerBase
     {
-        private readonly IRoomService _roomService;
-        private readonly IUserService _userService;
-        private readonly IInvitationService _invitationService;
+        private readonly RoomService _roomService;
+        private readonly InvitationService _invitationService;
 
         public InvitationController(
-            IRoomService roomService,
-            IUserService userService,
-            IInvitationService invitationService)
+            RoomService roomService,
+            InvitationService invitationService)
         {
             _roomService = roomService;
-            _userService = userService;
             _invitationService = invitationService;
         }
 
         [HttpPost("[action]")]
-        public ActionResult<OperationResult<CreateResponse>> Create(CreateRequest request)
+        public async Task<ActionResult<OperationResult<CreateResponse>>> Create(CreateRequest request)
         {
-            if (!_roomService.CheckUserCanInvite(request.UserId, request.RoomId))
+            if (!await _roomService.CheckUserCanInvite(request.UserId, request.RoomId))
                 return OperationResult<CreateResponse>.Error("Can't invite to room");
 
-            var room = _roomService.Get(request.RoomId);
-            Guid invitaionId = _invitationService.Create(request.UserId, room.Id, request.IsPermanent, room.ExpireAt);
+            var room = await _roomService.Get(request.RoomId);
+            Invitation invitaion = await _invitationService.Create(request.UserId, room.Id, request.IsPermanent, room.ExpireAt);
 
             return OperationResult<CreateResponse>.Ok(new CreateResponse
             {
-                InvitationId = invitaionId
+                InvitationId = invitaion.Id
             });
         }
     }
