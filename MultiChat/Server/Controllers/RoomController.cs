@@ -60,7 +60,7 @@ namespace MultiChat.Server.Controllers
 
             var invitation = await _invitationService.Get(request.Invite);
             if (invitation == null)
-                return OperationResult<EnterResponse>.Error("Invitation not found.");
+                return OperationResult<EnterResponse>.Error("Invitation not found (or expired).");
 
             if (invitation.ExpireAt < DateTime.UtcNow)
                 return OperationResult<EnterResponse>.Error("Invitation expired.");
