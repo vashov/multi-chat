@@ -1,0 +1,40 @@
+﻿<TelerikWindow Modal="true" @bind-Visible="@IsModalVisible" Width="300px">
+    <WindowTitle>
+        <strong>Use invite</strong>
+    </WindowTitle>
+    <WindowContent>
+        <TelerikForm EditContext="Context">
+            <FormValidation>
+                <DataAnnotationsValidator />
+            </FormValidation>
+            <FormItems>
+                @if (ShowInviteLinkInput)
+                {
+                    <FormItem>
+                        <Template>
+                            <TelerikTextBox Label="Enter invite link" @bind-Value="Model.InviteLink" />
+                            <ul class="py-2 list-unstyled">
+                                <li class="@Model.LinkValidation(Model.InviteLink)">link contains invite ID</li>
+                            </ul>
+                        </Template>
+                    </FormItem>
+                }
+                <FormItem>
+                    <Template>
+                        <TelerikTextBox Label="Enter name" @bind-Value="Model.UserName" />
+                        <ul class="py-2 list-unstyled">
+                            <li class="@Model.LengthValidation(Model.UserName)">length is between 3 to 16</li>
+                            <li class="@Model.RegexValidation(Model.UserName, EnterRoomModel.NameRegex)">only numbers and latin letters</li>
+                        </ul>
+                    </Template>
+                </FormItem>
+            </FormItems>
+            <FormButtons>
+                <TelerikButton @onclick="EnterChatRoom" Primary="true">Enter</TelerikButton>
+            </FormButtons>
+        </TelerikForm>
+    </WindowContent>
+    <WindowActions>
+        <WindowAction Name="Close" />
+    </WindowActions>
+</TelerikWindow>

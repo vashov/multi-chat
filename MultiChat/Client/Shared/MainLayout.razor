@@ -1,0 +1,36 @@
+﻿
+@inherits LayoutComponentBase
+
+<style>
+    .custom-notification-parent {
+        position: relative;
+    }
+
+    .custom-notification-child {
+        position: absolute;
+        z-index: 10005;
+        margin: 10px;
+        margin-top: 5px;
+    }
+</style>
+
+<div class="page">
+    <div class="main">
+        <div class="top-row px-4">
+            <TelerikButton OnClick="BeginRoomCreating" Class="ml-3" Primary="true">Create room</TelerikButton>
+            <TelerikButton OnClick="UseInvite" Class="mx-3 k-flat" Primary="true">Use invite</TelerikButton>
+            <a href="https://github.com/vashov/multi-chat" target="_blank" class="ml-md-auto mr-3 github-link">Github</a>
+        </div>
+
+        <div class="content px-4">
+            <TelerikRootComponent>
+                <TelerikNotification Class="custom-notification-child"
+                                     VerticalPosition="NotificationVerticalPosition.Top"
+                                     @ref="@NotifyService.GlobalNotificationReference" />
+                <MultiChat.Client.Components.CreateChatWindow @ref="CreateChatWindowInstance" />
+                <MultiChat.Client.Components.EnterChatWindow @ref="EnterChatWindowInstance" ShowInviteLinkInput="true" />
+                @Body
+            </TelerikRootComponent>
+        </div>
+    </div>
+</div>

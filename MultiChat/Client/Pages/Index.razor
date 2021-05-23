@@ -1,0 +1,51 @@
+﻿@page "/"
+@page "/invite/{inviteId}"
+
+<style>
+    div.k-tilelayout-item div.k-tilelayout-item-body {
+        padding: 0;
+    }
+
+    div.k-tilelayout-item div.k-tilelayout-item-body div.k-card {
+        border: none;
+    }
+</style>
+
+<TelerikMediaQuery Media="@MediaQuery" OnChange="@((doesMatch) => isSmallScreen = doesMatch)"></TelerikMediaQuery>
+
+@**This enter-chat-window used when open app via invite link*@
+<MultiChat.Client.Components.EnterChatWindow @ref="EnterChatWindowInstance" />
+
+<MultiChat.Client.Components.Wellcome IsVisible="RoomManager.Rooms.IsNullOrEmpty()" />
+@if (RoomManager.Rooms.HasAny())
+{
+    <TelerikTileLayout Columns="@(isSmallScreen ? 1 : 4)"
+                       ColumnWidth="@(isSmallScreen ? "100%" : "50%")"
+                       RowHeight="630px"
+                       Height="100%"
+                       Reorderable="true"
+                       Resizable="true">
+
+        <TileLayoutItems >
+            @foreach (var item in RoomManager.Rooms)
+            {
+                <TileLayoutItem HeaderText="@item.RoomTopic" ColSpan="2" RowSpan="1">
+                    <Content>
+                        <MultiChat.Client.Components.Chat UserId="item.UserId"
+                                                          UserPublicId="item.UserPublicId"
+                                                          RoomId="item.RoomId"
+                                                          RoomOwnerPublicId="item.RoomOwnerPublicId"
+                                                          OnlyOwnerCanInvite="item.OnlyOwnerCanInvite"
+                                                          ExpireAt="item.RoomExpireAt"
+                                                          CloseChat="@CloseChat"/>
+                    </Content>
+                </TileLayoutItem>
+            }
+        </TileLayoutItems>
+    </TelerikTileLayout>
+}
+    
+@code {
+    private string MediaQuery { get; set; } = "(max-width: 767px)";
+    private bool isSmallScreen { get; set; }
+}

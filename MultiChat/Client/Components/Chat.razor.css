@@ -1,0 +1,61 @@
+﻿::deep .post-likes-count {
+    font-size: 13px;
+    align-self: center;
+    color: #656565;
+}
+
+.image-height {
+    height: 170px;
+}
+
+.comment-sender {
+    font-size: 16px;
+    font-weight: bold;
+    max-width: 100px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.comment-text {
+    font-size: 16px;
+    font-weight: normal;
+    background-color: #212529;
+    border: 1.5px solid #212529 !important;
+}
+
+.comment-sender-hash {
+    font-size: 10px;
+}
+
+.comment-system {
+    font-style: italic; 
+}
+
+.avatar-size {
+    width: 35px !important;
+    height: 35px !important;
+    flex-basis: 35px !important;
+}
+
+.mb-xs {
+    margin-bottom: 8px;
+}
+
+.align-end {
+    text-align: end;
+}
+
+.justify-space-between {
+    justify-content: space-between;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+.flex-end {
+    display: flex;
+    justify-content: flex-end;
+}
+
