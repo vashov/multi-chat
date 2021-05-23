@@ -6,7 +6,7 @@ namespace MultiChat.Server.Services.Users
 {
     public interface IUserService
     {
-        User Create(string name, DateTimeOffset expireAt);
+        User Create(string name, int color, DateTimeOffset expireAt);
 
         bool UpdateConnection(Guid userId, string connectionId);
 

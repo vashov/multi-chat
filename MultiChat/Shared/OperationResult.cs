@@ -1,6 +1,6 @@
-﻿namespace MultiChat.Client.Services
+﻿namespace MultiChat.Shared
 {
-    public class ServiceResult<T>
+    public class OperationResult<T>
     {
         public T Result { get; set; }
 
@@ -8,19 +8,17 @@
 
         public bool IsOk => string.IsNullOrEmpty(ErrorMsg);
 
-        private ServiceResult() { }
-
-        public static ServiceResult<T> Ok(T result)
+        public static OperationResult<T> Ok(T result)
         {
-            return new ServiceResult<T>
+            return new OperationResult<T>
             {
                 Result = result
             };
         }
 
-        public static ServiceResult<T> Error(string errorMsg)
+        public static OperationResult<T> Error(string errorMsg)
         {
-            return new ServiceResult<T>
+            return new OperationResult<T>
             {
                 Result = default,
                 ErrorMsg = errorMsg,

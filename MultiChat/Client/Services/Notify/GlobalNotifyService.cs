@@ -14,7 +14,18 @@ namespace MultiChat.Client.Services.Notify
                 ThemeColor = "error",
                 Closable = false,
                 CloseAfter = 2000,
-                Icon = "exclamation-circle"
+                //Icon = "exclamation-circle"
+            });
+        }
+
+        public void AddAutoClosingInfoNotification(string text)
+        {
+            GlobalNotificationReference.Show(new NotificationModel()
+            {
+                Text = text,
+                ThemeColor = "info",
+                Closable = false,
+                CloseAfter = 2000,
             });
         }
     }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MultiChat.Client.Components;
+using MultiChat.Client.Services.Notify;
 using MultiChat.Client.Services.RoomsManager;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,9 @@ namespace MultiChat.Client.Pages
 
         [Inject]
         private NavigationManager NavigationManager { get; set; }
+
+        [Inject]
+        private GlobalNotifyService GlobalNotifyService { get; set; }
 
         private EnterChatWindow EnterChatWindowInstance { get; set; }
 
@@ -45,7 +49,12 @@ namespace MultiChat.Client.Pages
 
         private void CloseChat(Guid roomId)
         {
+            var room = RoomManager.Rooms.FirstOrDefault(r => r.RoomId == roomId);
+            if (room == null)
+                return;
+
             RoomManager.RemoveRoom(roomId);
+            GlobalNotifyService.AddAutoClosingInfoNotification(@$"Room ""{room.RoomTopic}"" expired");
             StateHasChanged();
         }
 

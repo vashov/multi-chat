@@ -3,6 +3,8 @@ using MultiChat.Server.Models;
 using MultiChat.Server.Services.Invitations;
 using MultiChat.Server.Services.Rooms;
 using MultiChat.Server.Services.Users;
+using MultiChat.Shared;
+using MultiChat.Shared.Helpers;
 using MultiChat.Shared.Rooms.Create;
 using MultiChat.Shared.Rooms.Enter;
 using System;
@@ -28,16 +30,17 @@ namespace MultiChat.Server.Controllers
         }
 
         [HttpPost("[action]")]
-        public ActionResult<CreateResponse> Create(CreateRequest request)
+        public ActionResult<OperationResult<CreateResponse>> Create(CreateRequest request)
         {
             TimeSpan lifespan = TimeSpan.Parse(request.ChatLifespan);
             DateTimeOffset expireAt = DateTimeOffset.UtcNow + lifespan;
 
-            User user = _userService.Create(request.UserName, expireAt);
+            ColorEnum color = ColorHelper.RandomColor();
+            User user = _userService.Create(request.UserName, (int)color, expireAt);
 
             Guid roomId = _roomService.Create(user.Id, request.Topic, expireAt, request.OnlyOwnerCanInvite);
 
-            return new CreateResponse
+            return OperationResult<CreateResponse>.Ok(new CreateResponse
             {
                 RoomTopic = request.Topic,
                 RoomId = roomId,
@@ -45,28 +48,32 @@ namespace MultiChat.Server.Controllers
                 UserPublicId = user.PublicId,
                 RoomExpireAt = expireAt,
                 OnlyOwnerCanInvite = request.OnlyOwnerCanInvite
-            };
+            });
         }
 
         [HttpPost("[action]")]
-        public ActionResult<EnterResponse> Enter(EnterRequest request)
+        public ActionResult<OperationResult<EnterResponse>> Enter(EnterRequest request)
         {
             var invitation = _invitationService.Get(request.Invite);
             if (invitation == null)
-                return BadRequest("Invitation not found.");
+                return OperationResult<EnterResponse>.Error("Invitation not found.");
 
-            User user = _userService.Create(request.UserName, invitation.ExpireAt);
+            ColorEnum color = ColorHelper.RandomColor();
+            User user = _userService.Create(request.UserName, (int)color, invitation.ExpireAt);
+            if (invitation.ExpireAt < DateTime.UtcNow)
+                return OperationResult<EnterResponse>.Error("Invitation expired.");
+
             if (!_invitationService.TryUse(user.Id, invitation.Id))
-                return BadRequest("Can't use invitation.");
+                return OperationResult<EnterResponse>.Error("Can't use invitation.");
 
             if (!_roomService.TryEnter(user.Id, invitation.RoomId))
-                return BadRequest("Can't enter to room.");
+                return OperationResult<EnterResponse>.Error("Can't enter to room.");
 
             Room room = _roomService.Get(invitation.RoomId);
 
             User owner = _userService.Get(room.OwnerId);
 
-            return new EnterResponse
+            return OperationResult<EnterResponse>.Ok(new EnterResponse
             {
                 RoomId = room.Id,
                 RoomOwnerPublicId = owner.PublicId,
@@ -75,7 +82,7 @@ namespace MultiChat.Server.Controllers
                 RoomExpireAt = room.ExpireAt,
                 RoomTopic = room.Topic,
                 OnlyOwnerCanInvite = room.OnlyOwnerCanInvite
-            };
+            });
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using MultiChat.Client.Infrastructure;
+using MultiChat.Shared;
 using MultiChat.Shared.Rooms.Create;
 using MultiChat.Shared.Rooms.Enter;
 using System;
@@ -18,41 +19,47 @@ namespace MultiChat.Client.Services.Rooms
             _client = client;
         }
 
-        public async Task<ServiceResult<CreateResponse>> Create(CreateRequest request)
+        public async Task<OperationResult<CreateResponse>> Create(CreateRequest request)
         {
             try
             {
                 var response = await _client.PostAsJsonAsync("api/Room/Create", request);
 
                 if (!response.IsSuccessStatusCode)
-                    return ServiceResult<CreateResponse>.Error(response.ReasonPhrase);
+                    return OperationResult<CreateResponse>.Error(response.ReasonPhrase);
 
                 var content = await response.Content.ReadAsStringAsync();
-                var createResponse = JsonSerializer.Deserialize<CreateResponse>(content, SerializerOptions.Default);
-                return ServiceResult<CreateResponse>.Ok(createResponse);
+                var createResponse = JsonSerializer.Deserialize<OperationResult<CreateResponse>>(content, SerializerOptions.Default);
+                if (!createResponse.IsOk)
+                    return OperationResult<CreateResponse>.Error(createResponse.ErrorMsg);
+
+                return OperationResult<CreateResponse>.Ok(createResponse.Result);
             }
             catch (Exception e)
             {
-                return ServiceResult<CreateResponse>.Error(e.Message);
+                return OperationResult<CreateResponse>.Error(e.Message);
             }
         }
 
-        public async Task<ServiceResult<EnterResponse>> Enter(EnterRequest request)
+        public async Task<OperationResult<EnterResponse>> Enter(EnterRequest request)
         {
             try
             {
                 var response = await _client.PostAsJsonAsync("api/Room/Enter", request);
 
                 if (!response.IsSuccessStatusCode)
-                    return ServiceResult<EnterResponse>.Error(response.ReasonPhrase);
+                    return OperationResult<EnterResponse>.Error(response.ReasonPhrase);
 
                 var content = await response.Content.ReadAsStringAsync();
-                var createResponse = JsonSerializer.Deserialize<EnterResponse>(content, SerializerOptions.Default);
-                return ServiceResult<EnterResponse>.Ok(createResponse);
+                var enterResponse = JsonSerializer.Deserialize<OperationResult<EnterResponse>>(content, SerializerOptions.Default);
+                if (!enterResponse.IsOk)
+                    return OperationResult<EnterResponse>.Error(enterResponse.ErrorMsg);
+
+                return OperationResult<EnterResponse>.Ok(enterResponse.Result);
             }
             catch (Exception e)
             {
-                return ServiceResult<EnterResponse>.Error(e.Message);
+                return OperationResult<EnterResponse>.Error(e.Message);
             }
         }
     }

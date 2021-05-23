@@ -47,6 +47,7 @@ namespace MultiChat.Server.Hubs
                 UserPublicId = sender.PublicId,
                 Date = DateTime.UtcNow,
                 Text = message,
+                UserColor = sender.Color,
                 MessageType = Shared.Messages.SendMessage.MessageTypeEnum.User
             };
 
@@ -98,6 +99,7 @@ namespace MultiChat.Server.Hubs
             {
                 UserName = sender.Name,
                 UserPublicId = Guid.Empty,
+                UserColor = sender.Color,
                 Date = DateTime.UtcNow,
                 Text = text,
                 MessageType = Shared.Messages.SendMessage.MessageTypeEnum.System

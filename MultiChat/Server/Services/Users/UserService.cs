@@ -9,13 +9,14 @@ namespace MultiChat.Server.Services.Users
     {
         private List<User> Users { get; } = new List<User>();
 
-        public User Create(string name, DateTimeOffset expireAt)
+        public User Create(string name, int color, DateTimeOffset expireAt)
         {
             var user = new User
             {
                 Id = Guid.NewGuid(),
                 PublicId = Guid.NewGuid(),
                 Name = name,
+                Color = color,
                 ExpireAt = expireAt
             };
 

@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.SignalR.Client;
 using MultiChat.Client.Services.Clipboard;
 using MultiChat.Client.Services.Invitations;
+using MultiChat.Shared;
+using MultiChat.Shared.Helpers;
 using MultiChat.Shared.Invitations.Create;
 using MultiChat.Shared.Messages;
 using System;
@@ -19,9 +21,9 @@ namespace MultiChat.Client.Components
     {
         private class Message
         {
-            public string Code { get; set; }
             public string UserName { get; set; }
             public Guid UserPublicId { get; set; }
+            public string UserColor { get; set; }
             public string Text { get; set; }
             public DateTime Date { get; set; }
             public SendMessage.MessageTypeEnum MessageType { get; set; }
@@ -147,12 +149,10 @@ namespace MultiChat.Client.Components
 
         private void HandleReceiveMessage(SendMessage message)
         {
-            string code = message.UserPublicId.ToString("N");
-            code = code.Substring(code.Length - 5);
-
+            string color = ColorHelper.GetColor((ColorEnum)message.UserColor);
             var messageInfo = new Message
             {
-                Code = code,
+                UserColor = color,
                 UserName = message.UserName,
                 UserPublicId = message.UserPublicId,
                 Text = message.Text,
@@ -168,11 +168,6 @@ namespace MultiChat.Client.Components
 
             Messages.Add(messageInfo);
             StateHasChanged();
-        }
-
-        protected override void OnInitialized()
-        {
-            
         }
 
         private TimeSpan GetLeftTime()
@@ -257,23 +252,5 @@ namespace MultiChat.Client.Components
                 Icon = icon
             });
         }
-
-        //void ValueChangedHandler(string input)
-        //{
-        //    TheValue = MaximumLength(input, MaxLength);
-        //}
-
-        //public string MaximumLength(string value, int maxLength)
-        //{
-        //    if (value.Length <= maxLength)
-        //    {
-        //        return value;
-        //    }
-        //    else
-        //    {
-        //        //WarningMessage = $"The maximum length of the string should be {maxLength}";
-        //        throw new Exception("My exception");
-        //    }
-        //}
     }
 }

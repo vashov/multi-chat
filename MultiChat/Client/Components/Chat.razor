@@ -25,11 +25,7 @@
     <CardBody Class="h-75 p-0">
         <div class="h-auto">
             <div>
-                @if (CanInvite)
-                {
-                    <TelerikButton Class="k-flat" Icon="copy" Title="Copy link" OnClick="@CopyInviteLink">Invite</TelerikButton>
-
-                }
+                <TelerikButton Class="k-flat" Icon="copy" Title="Copy link" OnClick="@CopyInviteLink" Enabled="CanInvite" Primary="true">Invite</TelerikButton>
                 <TelerikButton Class="k-float-right k-flat" Icon="clock" Enabled="false">@TimerDisplay</TelerikButton>
             </div>
         </div>
@@ -40,13 +36,11 @@
                     <div>
                         <div class="k-vbox">
                             @if (context.MessageType == SendMessage.MessageTypeEnum.User)
-                            { 
+                            {
                                 @if (context.PrevMessage == null || context.PrevMessage.UserPublicId != context.UserPublicId)
                                 {
-                                    <span>
-
-                                        <span class="comment-sender" style="word-break: break-word">@context.UserName</span>
-                                        <span class="k-text-disabled comment-sender-hash">[@context.Code]</span>
+                                    <span class="@GetMessageClass(context.MessageType, context.UserPublicId)">
+                                            <span class="comment-sender k-text-disabled" style="word-break: break-word; color: @context.UserColor;" >@context.UserName</span>
                                     </span>
 
                                 }
@@ -55,7 +49,7 @@
                             else
                             {
                                 <span class="comment-system k-text-disabled p-2" style="word-break: break-word">
-                                    <span class="k-font-weight-bold">@context.UserName</span><span class="k-ml-1">@context.Text</span>
+                                    <span class="k-font-weight-bold" style="color: @context.UserColor;">@context.UserName</span><span class="k-ml-1">@context.Text</span>
                                 </span>
                             }
                         </div>

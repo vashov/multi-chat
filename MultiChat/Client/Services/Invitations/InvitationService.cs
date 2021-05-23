@@ -1,8 +1,7 @@
 ﻿using MultiChat.Client.Infrastructure;
+using MultiChat.Shared;
 using MultiChat.Shared.Invitations.Create;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -19,22 +18,26 @@ namespace MultiChat.Client.Services.Invitations
             _client = client;
         }
 
-        public async Task<ServiceResult<CreateResponse>> Create(CreateRequest request)
+        public async Task<OperationResult<CreateResponse>> Create(CreateRequest request)
         {
             try
             {
                 var response = await _client.PostAsJsonAsync("api/Invitation/Create", request);
 
                 if (!response.IsSuccessStatusCode)
-                    return ServiceResult<CreateResponse>.Error(response.ReasonPhrase);
+                    return OperationResult<CreateResponse>.Error(response.ReasonPhrase);
 
                 var content = await response.Content.ReadAsStringAsync();
-                var createResponse = JsonSerializer.Deserialize<CreateResponse>(content, SerializerOptions.Default);
-                return ServiceResult<CreateResponse>.Ok(createResponse);
+                var createResponse = JsonSerializer.Deserialize<OperationResult<CreateResponse>>(content, SerializerOptions.Default);
+                if (!createResponse.IsOk)
+                {
+                    return OperationResult<CreateResponse>.Error(createResponse.ErrorMsg);
+                }
+                return OperationResult<CreateResponse>.Ok(createResponse.Result);
             }
             catch (Exception e)
             {
-                return ServiceResult<CreateResponse>.Error(e.Message);
+                return OperationResult<CreateResponse>.Error(e.Message);
             }
         }
     }

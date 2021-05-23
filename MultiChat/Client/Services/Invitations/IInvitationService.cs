@@ -1,10 +1,11 @@
-﻿using MultiChat.Shared.Invitations.Create;
+﻿using MultiChat.Shared;
+using MultiChat.Shared.Invitations.Create;
 using System.Threading.Tasks;
 
 namespace MultiChat.Client.Services.Invitations
 {
     public interface IInvitationService
     {
-        Task<ServiceResult<CreateResponse>> Create(CreateRequest request);
+        Task<OperationResult<CreateResponse>> Create(CreateRequest request);
     }
 }

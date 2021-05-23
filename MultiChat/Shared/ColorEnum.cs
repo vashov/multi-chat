@@ -1,0 +1,33 @@
+﻿namespace MultiChat.Shared
+{
+    public enum ColorEnum
+    {
+        c9DD9E2,
+        cB7A4C3,
+        cFBF0BF,
+        cFCC4B0,
+        cF4ABBA,
+        cBBD5D3,
+        cFBDBE1,
+        cFCD1B9,
+        cFCD0BB,
+        cEADBBD,
+        cE7CBDB,
+        cF6918A,
+        cF6A79F,
+        cF9BCB8,
+        cFCD1B5,
+        cFCC19B,
+        cC9E9E8,
+        c5F9392,
+        cC0DFC7,
+        cABCAB2,
+        c658C7E,
+        c8CBDA9,
+        cF9B1A2,
+        cFDD4C6,
+        cE6E5DE,
+        c98D6D4,
+        c53C5C5
+    }
+}
