@@ -14,15 +14,12 @@
         margin: 10px;
         margin-top: 5px;
     }
-
-    /*.k-textarea textarea {*/
-        /*overflow-y: scroll;*/
-        /*max-height: 100px!important;
-    }*/
 </style>
 
+
+
 @using MultiChat.Shared.Messages
- 
+
 <TelerikCard Width="100%" Class="h-100 custom-notification-parent">
     <TelerikNotification Class="custom-notification-child"
                          VerticalPosition="NotificationVerticalPosition.Top"
@@ -35,6 +32,7 @@
             </div>
         </div>
         <TelerikListView Data=@Messages
+                         Class="@ListViewId"
                          Height="95%">
             <Template>
                 <div class="k-hbox px-3 py-1 @GetMessageClass(context.MessageType, context.UserPublicId)">
@@ -45,7 +43,7 @@
                                 @if (context.PrevMessage == null || context.PrevMessage.UserPublicId != context.UserPublicId)
                                 {
                                     <span class="@GetMessageClass(context.MessageType, context.UserPublicId)">
-                                            <span class="comment-sender k-text-disabled" style="word-break: break-word; color: @context.UserColor;" >@context.UserName</span>
+                                        <span class="comment-sender k-text-disabled" style="word-break: break-word; color: @context.UserColor;">@context.UserName</span>
                                     </span>
 
                                 }
@@ -72,18 +70,23 @@
                              AutoSize="true">
             </TelerikTextArea>
         </span>
-        
+
         <div class="align-end">
             <TelerikButton Class="k-flat" Primary="true" Enabled="@IsSendBtnEnabled" OnClick="@Send">Send</TelerikButton>
         </div>
     </CardFooter>
 </TelerikCard>
 
+
+
 @code {
+
     string GetMessageClass(SendMessage.MessageTypeEnum messageType, Guid messageUserPublicId)
     {
         if (messageType == SendMessage.MessageTypeEnum.System)
             return "justify-center";
         return messageUserPublicId == UserPublicId ? "flex-end" : "justify-space-between";
     }
+
+    private string ListViewId = "listview" + Guid.NewGuid().ToString("N");
 } 

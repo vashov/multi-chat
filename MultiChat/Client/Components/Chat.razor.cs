@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.JSInterop;
 using MultiChat.Client.Services.Clipboard;
 using MultiChat.Client.Services.Invitations;
 using MultiChat.Shared;
@@ -8,7 +9,6 @@ using MultiChat.Shared.Helpers;
 using MultiChat.Shared.Invitations.Create;
 using MultiChat.Shared.Messages;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -63,6 +63,10 @@ namespace MultiChat.Client.Components
         [Inject]
         private IInvitationService InvitationService { get; set; }
 
+        [Inject] 
+        private IJSRuntime JS { get; set; }
+
+
         private System.Timers.Timer _timer; 
 
         private string _timerDisplay;
@@ -92,15 +96,10 @@ namespace MultiChat.Client.Components
                 value = value?.Replace("\n", null);
                 int len = (value?.Length ?? 0) < _allowedLength ? value?.Length ?? 0 : _allowedLength;
                 _messageInput = value?.Substring(0, len);
-                MessageCounter = GetMessageCounter();
             }
         }
 
         private const int _allowedLength = 128;
-
-        private string MessageCounterClass => (MessageInput?.Length ?? 0) >= _allowedLength ? "text-danger" : "text-success";
-
-        private string MessageCounter { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
@@ -108,8 +107,6 @@ namespace MultiChat.Client.Components
 
             InitializeTimer();
             await InitializeHubConnection();
-
-            MessageCounter = GetMessageCounter();
         }
 
         private async Task InitializeHubConnection()
@@ -147,7 +144,7 @@ namespace MultiChat.Client.Components
             }
         }
 
-        private void HandleReceiveMessage(SendMessage message)
+        private async void HandleReceiveMessage(SendMessage message)
         {
             string color = ColorHelper.GetColor((ColorEnum)message.UserColor);
             var messageInfo = new Message
@@ -168,6 +165,13 @@ namespace MultiChat.Client.Components
 
             Messages.Add(messageInfo);
             StateHasChanged();
+            await Scroll();
+        }
+
+        private async Task Scroll()
+        {
+            await Task.Delay(10); // wait while message will be added to dom
+            await JS.InvokeVoidAsync("ScrollChat", ListViewId);
         }
 
         private TimeSpan GetLeftTime()
@@ -234,11 +238,6 @@ namespace MultiChat.Client.Components
             {
                 await Send();
             }
-        }
-
-        private void ShowUserList()
-        {
-
         }
 
         private void AddAutoClosingNotification(string text, string theme, string icon)

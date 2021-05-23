@@ -35,6 +35,20 @@
         <a class="dismiss">🗙</a>
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
+    <script>
+        window.ScrollChat = (id) => {
+            console.log(id);
+            var objDiv = document.getElementsByClassName(id);
+            if (objDiv.length == 0)
+                return;
+            objDiv = objDiv[0];
+            objDiv = objDiv.getElementsByClassName("k-listview-content");
+            if (objDiv.length == 0)
+                return;
+            objDiv = objDiv[0];
+            objDiv.scrollTop = objDiv.scrollHeight;
+        }
+    </script>
 </body>
 
 </html>
