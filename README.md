@@ -2,9 +2,14 @@
 
 Project was created as part of [The Worthy Web App Challenge](https://progress-worthyweb.devpost.com/)<br/>
 
-[See demo](https://www.youtube.com/watch?v=Z0K1lEqj80Q)
+[Watch presentation video](https://www.youtube.com/watch?v=Z0K1lEqj80Q)<br/>
+
 
 ## How to run
+
+[Try it out here](https://telerik-multichat.herokuapp.com/)<br/>
+
+### Or run on local machine
 
 Requirementes:
 - Telerik Nuget Source (https://nuget.telerik.com/nuget)
